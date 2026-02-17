@@ -285,7 +285,7 @@
     <nav class="fixed w-full top-0 z-50 glass-nav">
         <div class="max-w-7xl mx-auto px-4 h-20 flex justify-between items-center">
             <div class="flex items-center gap-3">
-                <img src="https://nongki.ac.th/np2019/img/home/logo_np.gif" alt="Logo โรงเรียนหนองกี่พิทยาคม" class="w-12 h-12 object-contain" onerror="this.onerror=null; this.src='https://via.placeholder.com/48?text=NP';">
+                <img src="https://nongki.ac.th/np2019/img/home/logo_np.gif" alt="Logo โรงเรียนหนองกี่พิทยาคม" class="w-12 h-12 object-contain" loading="lazy" onerror="console.error('Image failed to load:', this.src); this.src='https://via.placeholder.com/48?text=NP'; this.alt='Image unavailable';">
                 <div class="flex flex-col">
                     <span class="text-lg font-bold nav-text leading-none">ฝ่ายกิจการนักเรียน</span>
                     <span class="text-xs nav-text font-medium opacity-90">โรงเรียนหนองกี่พิทยาคม</span>
@@ -313,7 +313,7 @@
                 <div class="grid md:grid-cols-1 gap-8 items-center">
                     <div>
                         <h1 class="text-3xl md:text-5xl font-black text-blue-900 mb-6 tracking-tight">
-                            ระบบบริหารจัดการ <span class="text-blue-600">ฝ่ายกิจการนักเรียน</span>
+                            ระบบคำขอใช้ข้อมูลกล้องวงจรปิด <span class="text-blue-600">ฝ่ายกิจการนักเรียน</span>
                         </h1>
                         <p class="main-desc text-slate-700 max-w-2xl text-sm md:text-base leading-relaxed">
                             โรงเรียนหนองกี่พิทยาคมมุ่งเน้นความปลอดภัยของนักเรียนและบุคลากร โดยติดตั้งระบบกล้องวงจรปิดครอบคลุมพื้นที่อาคารเรียน สนามกีฬา และจุดเสี่ยงทั่วบริเวณโรงเรียน 
@@ -393,7 +393,7 @@
                             <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center">
                                 <i class="fa-solid fa-chart-column text-white"></i>
                             </div>
-                            สถิติการแจ้งเหตุ
+                            สถิติการขอใช้ข้อมูลกล้องวงจรปิด
                         </h2>
                         <div class="flex items-center gap-3">
                             <span id="syncStatus" class="text-xs font-bold px-3 py-1.5 rounded-full bg-blue-100 text-blue-700 uppercase text-center min-w-[90px]">Checking...</span>
@@ -681,7 +681,7 @@
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'จำนวนการแจ้งเหตุ',
+                        label: 'จำนวนการขอใช้ข้อมูล',
                         data: values,
                         backgroundColor: 'rgba(0, 82, 204, 0.85)',
                         borderColor: '#0052cc',
@@ -835,5 +835,5 @@
             refreshData();
         };
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cf6949dd7d66bc4',t:'MTc3MTM0NDg5Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cf6a62f35fc98de',t:'MTc3MTM0NTYxNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
