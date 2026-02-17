@@ -256,8 +256,8 @@
         /* Vertical Stepper Styles */
         .vertical-line {
             position: absolute;
-            left: 2.25rem;
-            top: 5rem;
+            left: 1.5rem;
+            top: 0;
             bottom: 0;
             width: 2px;
             background: linear-gradient(to bottom, #0052cc, #fbbf24, #0052cc);
@@ -265,35 +265,7 @@
         }
 
         .step-number {
-            position: absolute;
-            left: -2.75rem;
-            top: 0rem;
-            width: 5rem;
-            height: 5rem;
-            background: linear-gradient(135deg, var(--step-color-from), var(--step-color-to));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 900;
-            font-size: 2.5rem;
-            border: 6px solid white;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-            z-index: 20;
-        }
-
-        @media (max-width: 768px) {
-            .vertical-line {
-                display: none;
-            }
-            .step-number {
-                position: absolute;
-                left: -2.5rem;
-                width: 3.5rem;
-                height: 3.5rem;
-                font-size: 1.75rem;
-            }
+            display: none;
         }
     </style>
 </head>
@@ -343,15 +315,15 @@
         <!-- Info Steps Section - Vertical Stepper -->
         <div class="max-w-3xl mx-auto mt-12">
             <div class="relative">
-                <!-- Vertical Line (Hidden on Mobile) -->
+                <!-- Vertical Line -->
                 <div class="vertical-line hidden md:block"></div>
 
                 <div class="space-y-8">
                     <!-- Step 1 -->
-                    <div class="step-card p-8 rounded-2xl relative group md:ml-32 fade-in-up" style="--step-color-from: #0052cc; --step-color-to: #003d99;">
+                    <div class="step-card p-8 rounded-2xl relative group md:ml-12 fade-in-up">
                         <div class="step-number">1</div>
                         <div class="flex gap-6 items-start">
-                            <div class="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl flex items-center justify-center text-blue-600 shrink-0 hidden md:flex">
+                            <div class="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl flex items-center justify-center text-blue-600 shrink-0">
                                 <i class="fa-solid fa-pen-to-square text-xl"></i>
                             </div>
                             <div class="flex-grow">
@@ -362,10 +334,10 @@
                     </div>
 
                     <!-- Step 2 -->
-                    <div class="step-card p-8 rounded-2xl relative group md:ml-32 fade-in-up" style="--step-color-from: #fbbf24; --step-color-to: #f59e0b;">
+                    <div class="step-card p-8 rounded-2xl relative group md:ml-12 fade-in-up">
                         <div class="step-number">2</div>
                         <div class="flex gap-6 items-start">
-                            <div class="w-12 h-12 bg-gradient-to-br from-yellow-100 to-yellow-50 rounded-xl flex items-center justify-center text-yellow-600 shrink-0 hidden md:flex">
+                            <div class="w-12 h-12 bg-gradient-to-br from-yellow-100 to-yellow-50 rounded-xl flex items-center justify-center text-yellow-600 shrink-0">
                                 <i class="fa-solid fa-phone-volume text-xl"></i>
                             </div>
                             <div class="flex-grow">
@@ -376,10 +348,10 @@
                     </div>
 
                     <!-- Step 3 -->
-                    <div class="step-card p-8 rounded-2xl relative group md:ml-32 fade-in-up" style="--step-color-from: #003d99; --step-color-to: #002d6b;">
+                    <div class="step-card p-8 rounded-2xl relative group md:ml-12 fade-in-up">
                         <div class="step-number">3</div>
                         <div class="flex gap-6 items-start">
-                            <div class="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl flex items-center justify-center text-blue-700 shrink-0 hidden md:flex">
+                            <div class="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl flex items-center justify-center text-blue-700 shrink-0">
                                 <i class="fa-solid fa-eye text-xl"></i>
                             </div>
                             <div class="flex-grow">
@@ -784,5 +756,5 @@
             refreshData();
         };
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cf58de554928838',t:'MTc3MTMzNDEzNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cf59e62b23a8838',t:'MTc3MTMzNDgxMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cf5a39136398838',t:'MTc3MTMzNTAyMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
