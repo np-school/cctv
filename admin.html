@@ -12,15 +12,37 @@
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        body { font-family: 'Sarabun', sans-serif; background: linear-gradient(135deg, #003d99 0%, #0052cc 50%, #003d99 100%); color: #334155; min-height: 100vh; }
-        .glass-header { background: linear-gradient(90deg, rgba(0, 61, 153, 0.98) 0%, rgba(0, 82, 204, 0.98) 100%); backdrop-filter: blur(20px); border-bottom: 3px solid #fbbf24; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body { 
+            font-family: 'Sarabun', sans-serif; 
+            background: #ffffff;
+            color: #1e40af;
+            scroll-behavior: smooth;
+            min-height: 100vh;
+        }
+
+        .glass-header { 
+            background: linear-gradient(135deg, #0052cc 0%, #003d99 100%);
+            border-bottom: 2px solid #003d99;
+            box-shadow: 0 4px 16px rgba(0, 82, 204, 0.3);
+        }
+
+        .header-text {
+            color: #ffffff;
+        }
+
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: rgba(71, 85, 105, 0.2); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #fbbf24, #f59e0b); border-radius: 10px; }
+        ::-webkit-scrollbar-track { background: rgba(229, 231, 235, 0.5); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #0052cc, #003d99); border-radius: 10px; }
         
         .loader-big { 
-            border: 4px solid rgba(251, 191, 36, 0.2); 
-            border-top: 4px solid #fbbf24; 
+            border: 4px solid rgba(0, 82, 204, 0.2); 
+            border-top: 4px solid #0052cc; 
             border-radius: 50%; 
             width: 40px; 
             height: 40px; 
@@ -29,15 +51,16 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         .stat-card {
-            transition: all 0.3s ease;
-            border-left: 4px solid #0052cc;
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid #e5e7eb;
+            background: #ffffff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
         }
 
         .stat-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 15px 40px rgba(0, 82, 204, 0.25);
-            border-left-color: #fbbf24;
+            box-shadow: 0 12px 24px rgba(0, 82, 204, 0.12);
+            border-color: #0052cc;
         }
 
         .table-row-highlight {
@@ -45,34 +68,94 @@
         }
 
         .table-row-highlight:hover {
-            background-color: #fffef0;
+            background-color: #dbeafe;
         }
 
         .fade-in {
-            animation: fadeIn 0.4s ease-in-out;
+            animation: fadeIn 0.6s ease-out;
         }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        .glass-card {
+            background: #ffffff;
+            border: 2px solid #e5e7eb;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .section-header {
+            border-bottom: 3px solid #0052cc;
+            padding-bottom: 0.75rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .status-pending {
+            background-color: #fef08a;
+            color: #854d0e;
+        }
+
+        .status-processing {
+            background-color: #bfdbfe;
+            color: #1e3a8a;
+        }
+
+        .status-completed {
+            background-color: #bbf7d0;
+            color: #065f46;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
     <!-- Header -->
-    <header class="glass-header text-white sticky top-0 z-50 shadow-lg">
-        <div class="max-w-7xl mx-auto px-4 h-16 md:h-20 flex justify-between items-center">
+    <header class="glass-header sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 h-20 flex justify-between items-center">
             <div class="flex items-center gap-3">
-                <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                    <i class="fa-solid fa-shield-halved text-yellow-300 text-xl"></i>
-                </div>
+                <img src="https://nongki.ac.th/np2019/img/home/logo_np.gif" alt="Logo" class="w-12 h-12 object-contain" onerror="this.onerror=null; this.src='https://via.placeholder.com/48?text=NP';">
                 <div class="flex flex-col">
-                    <h1 class="font-black text-lg md:text-xl leading-tight">ระบบจัดการ</h1>
-                    <span class="text-xs text-yellow-200 font-medium">สำหรับเจ้าหน้าที่</span>
+                    <span class="text-lg font-bold header-text leading-none">Dashboard</span>
+                    <span class="text-xs header-text font-medium opacity-90">สำหรับเจ้าหน้าที่</span>
                 </div>
             </div>
-            <a href="index.html" class="bg-white/15 hover:bg-white/25 px-4 py-2.5 rounded-xl text-sm transition-all flex items-center gap-2 font-bold border border-white/20">
+            
+            <a href="index.html" class="bg-white/15 hover:bg-white/25 px-6 py-2.5 rounded-full text-sm transition-all flex items-center gap-2 font-bold border border-white/20 header-text">
                 <i class="fa-solid fa-arrow-left"></i> <span class="hidden sm:inline">กลับหน้าหลัก</span>
             </a>
         </div>
@@ -80,38 +163,47 @@
 
     <main class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-8">
         <!-- Dashboard Summary -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <div class="stat-card p-5 rounded-2xl shadow-md border border-blue-100 fade-in">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+            <div class="stat-card p-5 rounded-2xl fade-in">
                 <div class="flex justify-between items-start mb-2">
                     <i class="fa-solid fa-inbox text-blue-600 text-2xl"></i>
-                    <span class="text-xs font-bold text-white bg-blue-600 px-2 py-1 rounded-full">ทั้งหมด</span>
+                    <span class="text-xs font-bold text-white bg-blue-600 px-2.5 py-1 rounded-full">ทั้งหมด</span>
                 </div>
-                <div class="text-3xl font-black text-slate-800" id="totalCount">0</div>
+                <div class="text-3xl font-black text-blue-900" id="totalCount">0</div>
                 <div class="text-xs font-bold text-slate-400 uppercase mt-1">คำร้องทั้งหมด</div>
             </div>
 
-            <div class="stat-card p-5 rounded-2xl shadow-md border border-yellow-100 fade-in" style="animation-delay: 0.1s;">
+            <div class="stat-card p-5 rounded-2xl fade-in" style="animation-delay: 0.1s;">
                 <div class="flex justify-between items-start mb-2">
                     <i class="fa-solid fa-hourglass-end text-yellow-500 text-2xl"></i>
-                    <span class="text-xs font-bold text-white bg-yellow-500 px-2 py-1 rounded-full">วันนี้</span>
+                    <span class="text-xs font-bold text-white bg-yellow-500 px-2.5 py-1 rounded-full">รอ</span>
                 </div>
-                <div class="text-3xl font-black text-slate-800" id="todayCount">0</div>
-                <div class="text-xs font-bold text-slate-400 uppercase mt-1">คำร้องวันนี้</div>
+                <div class="text-3xl font-black text-blue-900" id="pendingCount">0</div>
+                <div class="text-xs font-bold text-slate-400 uppercase mt-1">รอดำเนินการ</div>
             </div>
 
-            <div class="stat-card p-5 rounded-2xl shadow-md border border-green-100 fade-in" style="animation-delay: 0.2s;">
+            <div class="stat-card p-5 rounded-2xl fade-in" style="animation-delay: 0.2s;">
+                <div class="flex justify-between items-start mb-2">
+                    <i class="fa-solid fa-spinner text-blue-600 text-2xl"></i>
+                    <span class="text-xs font-bold text-white bg-blue-600 px-2.5 py-1 rounded-full">ดำเนิน</span>
+                </div>
+                <div class="text-3xl font-black text-blue-900" id="processingCount">0</div>
+                <div class="text-xs font-bold text-slate-400 uppercase mt-1">กำลังดำเนินการ</div>
+            </div>
+
+            <div class="stat-card p-5 rounded-2xl fade-in" style="animation-delay: 0.3s;">
                 <div class="flex justify-between items-start mb-2">
                     <i class="fa-solid fa-check-circle text-green-600 text-2xl"></i>
-                    <span class="text-xs font-bold text-white bg-green-600 px-2 py-1 rounded-full">สัปดาห์</span>
+                    <span class="text-xs font-bold text-white bg-green-600 px-2.5 py-1 rounded-full">เสร็จ</span>
                 </div>
-                <div class="text-3xl font-black text-slate-800" id="weekCount">0</div>
-                <div class="text-xs font-bold text-slate-400 uppercase mt-1">คำร้องสัปดาห์นี้</div>
+                <div class="text-3xl font-black text-blue-900" id="completedCount">0</div>
+                <div class="text-xs font-bold text-slate-400 uppercase mt-1">เสร็จสิ้น</div>
             </div>
 
-            <div class="stat-card p-5 rounded-2xl shadow-md border border-indigo-100 fade-in" style="animation-delay: 0.3s;">
+            <div class="stat-card p-5 rounded-2xl fade-in" style="animation-delay: 0.4s;">
                 <div class="flex justify-between items-start mb-2">
                     <i class="fa-solid fa-circle-check text-indigo-600 text-2xl"></i>
-                    <span class="text-xs font-bold text-white bg-indigo-600 px-2 py-1 rounded-full">สถานะ</span>
+                    <span class="text-xs font-bold text-white bg-indigo-600 px-2.5 py-1 rounded-full">สถานะ</span>
                 </div>
                 <div id="statusLabel" class="text-3xl font-black text-green-600">●</div>
                 <div class="text-xs font-bold text-slate-400 uppercase mt-1">สถานะระบบ</div>
@@ -119,19 +211,19 @@
         </div>
 
         <!-- Table Content -->
-        <div class="bg-white rounded-3xl border-2 border-blue-200 shadow-lg overflow-hidden fade-in">
+        <div class="glass-card rounded-2xl overflow-hidden fade-in">
             <!-- Header -->
-            <div class="p-6 border-b-2 border-yellow-300 bg-gradient-to-r from-blue-50 to-yellow-50">
+            <div class="p-6 border-b-2 border-blue-200 bg-gradient-to-r from-blue-50 to-white">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <h2 class="font-black text-lg text-blue-900 flex items-center gap-3">
+                    <h2 class="font-black text-lg text-blue-900 flex items-center gap-3 section-header flex-grow pb-2 md:pb-0">
                         <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center text-white">
                             <i class="fa-solid fa-table-list"></i>
                         </div>
                         รายการคำขอดูกล้องวงจรปิด
                     </h2>
                     <div class="flex gap-2 w-full md:w-auto">
-                        <input type="text" id="searchInput" placeholder="ค้นหาชื่อ ID หรือชั้น..." class="flex-grow border-2 border-blue-200 p-2.5 rounded-xl text-sm outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-200 transition-all">
-                        <button onclick="fetchAdminData()" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 py-2.5 rounded-xl transition-all text-sm font-bold flex items-center gap-2 shadow-md border-2 border-yellow-300">
+                        <input type="text" id="searchInput" placeholder="ค้นหาชื่อ ID หรือชั้น..." class="flex-grow border-2 border-blue-200 p-2.5 rounded-xl text-sm outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition-all bg-white">
+                        <button onclick="fetchAdminData()" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 py-2.5 rounded-xl transition-all text-sm font-bold flex items-center gap-2 shadow-md">
                             <i class="fa-solid fa-sync-alt"></i> <span class="hidden sm:inline">รีเฟรช</span>
                         </button>
                     </div>
@@ -141,19 +233,20 @@
             <!-- Table -->
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-sm">
-                    <thead class="bg-gradient-to-r from-blue-100 to-blue-50 text-blue-900 font-bold text-xs uppercase border-b-2 border-yellow-300">
+                    <thead class="bg-gradient-to-r from-blue-100 to-blue-50 text-blue-900 font-bold text-xs uppercase border-b-2 border-blue-200">
                         <tr>
                             <th class="px-4 py-3 lg:px-6">ID</th>
                             <th class="px-4 py-3 lg:px-6">ผู้แจ้งเหตุ</th>
                             <th class="px-4 py-3 lg:px-6 hidden md:table-cell">ตำแหน่ง/ชั้น</th>
                             <th class="px-4 py-3 lg:px-6 hidden lg:table-cell">วันที่แจ้ง</th>
                             <th class="px-4 py-3 lg:px-6">เป้าหมายตรวจ</th>
-                            <th class="px-4 py-3 lg:px-6 hidden md:table-cell">รายละเอียด</th>
+                            <th class="px-4 py-3 lg:px-6">สถานะ</th>
+                            <th class="px-4 py-3 lg:px-6">จัดการ</th>
                         </tr>
                     </thead>
                     <tbody id="dataTableBody">
                         <tr>
-                            <td colspan="6" class="px-4 py-16 text-center">
+                            <td colspan="7" class="px-4 py-16 text-center">
                                 <div class="flex flex-col items-center gap-3">
                                     <div class="loader-big"></div>
                                     <p class="text-slate-500 font-medium">กำลังโหลดข้อมูล...</p>
@@ -165,7 +258,7 @@
             </div>
 
             <!-- Footer Stats -->
-            <div class="px-6 py-4 bg-gradient-to-r from-yellow-50 to-blue-50 border-t-2 border-yellow-300 flex justify-between items-center text-xs text-blue-700 font-bold">
+            <div class="px-6 py-4 bg-gradient-to-r from-blue-50 to-white border-t-2 border-blue-200 flex justify-between items-center text-xs text-blue-700 font-bold">
                 <span>แสดง: <span id="visibleCount">0</span> รายการ</span>
                 <span id="lastUpdate" class="flex items-center gap-1">
                     <i class="fa-solid fa-circle-check text-green-600"></i>
@@ -174,6 +267,59 @@
             </div>
         </div>
     </main>
+
+    <!-- Status Update Modal -->
+    <div id="statusModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-black text-blue-900 flex items-center gap-2">
+                    <i class="fa-solid fa-tasks text-blue-600"></i>
+                    อัปเดตสถานะคำร้อง
+                </h3>
+                <button onclick="closeStatusModal()" class="text-gray-400 hover:text-gray-600 text-2xl">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="mb-4 p-3 bg-blue-50 rounded-xl border-2 border-blue-200">
+                <p class="text-sm font-bold text-blue-900"><span id="modalRequestId">--</span> | <span id="modalFullName">--</span></p>
+            </div>
+
+            <form id="statusForm" class="space-y-4" onsubmit="updateStatus(event)">
+                <input type="hidden" id="modalIndex" value="">
+
+                <div class="space-y-3">
+                    <label class="text-sm font-black text-blue-900">เลือกสถานะ:</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-3 p-3 border-2 border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition-all">
+                            <input type="radio" name="status" value="รอดำเนินการ" required class="w-5 h-5 text-yellow-500 cursor-pointer">
+                            <span class="text-sm font-bold text-gray-700 flex-grow">รอดำเนินการ</span>
+                            <span class="status-badge status-pending">รอ</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-3 border-2 border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition-all">
+                            <input type="radio" name="status" value="กำลังดำเนินการ" required class="w-5 h-5 text-blue-500 cursor-pointer">
+                            <span class="text-sm font-bold text-gray-700 flex-grow">กำลังดำเนินการ</span>
+                            <span class="status-badge status-processing">ดำเนิน</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-3 border-2 border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition-all">
+                            <input type="radio" name="status" value="เสร็จสิ้น" required class="w-5 h-5 text-green-500 cursor-pointer">
+                            <span class="text-sm font-bold text-gray-700 flex-grow">เสร็จสิ้น</span>
+                            <span class="status-badge status-completed">เสร็จ</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="flex gap-3 pt-4">
+                    <button type="button" onclick="closeStatusModal()" class="flex-grow border-2 border-blue-200 text-blue-600 font-bold py-2.5 rounded-xl hover:bg-blue-50 transition-all">
+                        ยกเลิก
+                    </button>
+                    <button type="submit" class="flex-grow bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold py-2.5 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all shadow-md">
+                        บันทึก
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <script>
         const scriptURL = 'https://script.google.com/macros/s/AKfycbxYxjZzOYpmsOC4mizwfagtVuUbgMLTPwuZ_aw_tfVDHIjVXOCQ5uS8K9zECDs1cUra2w/exec'; 
@@ -194,6 +340,24 @@
             return date.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: '2-digit' });
         }
 
+        function getStatusBadge(status) {
+            let badgeClass = 'status-badge ';
+            switch(status) {
+                case 'รอดำเนินการ':
+                    badgeClass += 'status-pending';
+                    break;
+                case 'กำลังดำเนินการ':
+                    badgeClass += 'status-processing';
+                    break;
+                case 'เสร็จสิ้น':
+                    badgeClass += 'status-completed';
+                    break;
+                default:
+                    badgeClass += 'status-pending';
+            }
+            return `<span class="${badgeClass}">${status || 'รอดำเนินการ'}</span>`;
+        }
+
         function updateLastUpdateTime() {
             const now = new Date();
             const time = now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
@@ -208,12 +372,15 @@
             
             if (!scriptURL || scriptURL === 'YOUR_APPS_SCRIPT_URL_HERE') {
                 allData = [
-                    { requestId: 'NP0001', submissionDate: new Date(Date.now() - 3600000), fullName: 'ตัวอย่าง สมชาย', position: 'ม.1/2', targetDate: '2025-02-20', details: 'ทำกระเป๋าตังค์หายแถวหน้าเสาธง' },
-                    { requestId: 'NP0002', submissionDate: new Date(Date.now() - 7200000), fullName: 'สมศรี มีดี', position: 'ม.5/4', targetDate: '2025-02-19', details: 'รถจักรยานยนต์โดนเฉี่ยวชนที่โรงจอด' }
+                    { requestId: 'NP0001', submissionDate: new Date(Date.now() - 3600000), fullName: 'ตัวอย่าง สมชาย', position: 'ม.1/2', targetDate: '2025-02-20', details: 'ทำกระเป๋าตังค์หายแถวหน้าเสาธง', status: 'รอดำเนินการ' },
+                    { requestId: 'NP0002', submissionDate: new Date(Date.now() - 7200000), fullName: 'สมศรี มีดี', position: 'ม.5/4', targetDate: '2025-02-19', details: 'รถจักรยานยนต์โดนเฉี่ยวชนที่โรงจอด', status: 'กำลังดำเนินการ' },
+                    { requestId: 'NP0003', submissionDate: new Date(Date.now() - 86400000), fullName: 'นายสมหวัง ใจดี', position: 'ม.3/1', targetDate: '2025-02-18', details: 'พฤติกรรมเด็กผู้ร้ายที่ห้องบัญชี', status: 'เสร็จสิ้น' }
                 ];
                 renderTable(allData);
                 updateStats(allData);
                 updateLastUpdateTime();
+                document.getElementById('statusLabel').innerHTML = '●';
+                document.getElementById('statusLabel').className = "text-3xl font-black text-green-600";
                 return;
             }
 
@@ -221,13 +388,15 @@
                 const response = await fetch(`${scriptURL}?action=getAll&t=${new Date().getTime()}`);
                 const data = await response.json();
                 if (data.result === 'success') {
-                    allData = data.data;
+                    allData = data.data || [];
                     renderTable(allData);
                     updateStats(allData);
                     updateLastUpdateTime();
+                    document.getElementById('statusLabel').innerHTML = '●';
+                    document.getElementById('statusLabel').className = "text-3xl font-black text-green-600";
                 } else throw new Error(data.error);
             } catch (err) {
-                tableBody.innerHTML = `<tr><td colspan="6" class="px-6 py-10 text-center text-red-600 font-bold"><i class="fa-solid fa-exclamation-triangle mr-2"></i>ไม่สามารถเชื่อมต่อได้</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="7" class="px-6 py-10 text-center text-red-600 font-bold"><i class="fa-solid fa-exclamation-triangle mr-2"></i>ไม่สามารถเชื่อมต่อได้</td></tr>`;
                 document.getElementById('statusLabel').innerHTML = '●';
                 document.getElementById('statusLabel').className = "text-3xl font-black text-red-600";
             }
@@ -236,7 +405,7 @@
         function renderTable(data) {
             const tableBody = document.getElementById('dataTableBody');
             if (data.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-slate-400 italic">ไม่พบข้อมูลคำร้อง</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="7" class="px-6 py-12 text-center text-slate-400 italic">ไม่พบข้อมูลคำร้อง</td></tr>`;
                 document.getElementById('visibleCount').innerText = '0';
                 return;
             }
@@ -252,9 +421,14 @@
                     </td>
                     <td class="px-4 py-3 lg:px-6 text-blue-700 hidden md:table-cell text-sm font-medium">${item.position || '-'}</td>
                     <td class="px-4 py-3 lg:px-6 text-xs text-blue-600 hidden lg:table-cell">${formatDate(item.submissionDate)}</td>
-                    <td class="px-4 py-3 lg:px-6 font-bold text-yellow-600 text-sm">${formatSimpleDate(item.targetDate)}</td>
-                    <td class="px-4 py-3 lg:px-6 hidden md:table-cell">
-                        <p class="text-xs text-blue-700 line-clamp-2" title="${item.details}">${item.details || '-'}</p>
+                    <td class="px-4 py-3 lg:px-6 font-bold text-blue-700 text-sm">${formatSimpleDate(item.targetDate)}</td>
+                    <td class="px-4 py-3 lg:px-6">
+                        ${getStatusBadge(item.status || 'รอดำเนินการ')}
+                    </td>
+                    <td class="px-4 py-3 lg:px-6">
+                        <button onclick="openStatusModal(${idx}, '${item.requestId}', '${item.fullName}')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all">
+                            <i class="fa-solid fa-edit mr-1"></i>แก้ไข
+                        </button>
                     </td>
                 </tr>
             `).join('');
@@ -265,26 +439,40 @@
         function updateStats(data) {
             document.getElementById('totalCount').innerText = data.length;
             
-            const today = new Date();
-            today.setHours(0,0,0,0);
+            const pending = data.filter(item => (item.status || 'รอดำเนินการ') === 'รอดำเนินการ').length;
+            const processing = data.filter(item => (item.status || 'รอดำเนินการ') === 'กำลังดำเนินการ').length;
+            const completed = data.filter(item => (item.status || 'รอดำเนินการ') === 'เสร็จสิ้น').length;
             
-            const todayCount = data.filter(item => {
-                const itemDate = new Date(item.submissionDate);
-                itemDate.setHours(0,0,0,0);
-                return itemDate.getTime() === today.getTime();
-            }).length;
+            document.getElementById('pendingCount').innerText = pending;
+            document.getElementById('processingCount').innerText = processing;
+            document.getElementById('completedCount').innerText = completed;
+        }
+
+        function openStatusModal(index, requestId, fullName) {
+            document.getElementById('modalIndex').value = index;
+            document.getElementById('modalRequestId').innerText = requestId;
+            document.getElementById('modalFullName').innerText = fullName;
+            document.querySelector(`input[value="${allData[index].status || 'รอดำเนินการ'}"]`).checked = true;
+            document.getElementById('statusModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeStatusModal() {
+            document.getElementById('statusModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function updateStatus(event) {
+            event.preventDefault();
+            const index = parseInt(document.getElementById('modalIndex').value);
+            const newStatus = document.querySelector('input[name="status"]:checked').value;
             
-            const weekAgo = new Date(today);
-            weekAgo.setDate(weekAgo.getDate() - 7);
-            
-            const weekCount = data.filter(item => {
-                const itemDate = new Date(item.submissionDate);
-                itemDate.setHours(0,0,0,0);
-                return itemDate.getTime() >= weekAgo.getTime() && itemDate.getTime() <= today.getTime();
-            }).length;
-            
-            document.getElementById('todayCount').innerText = todayCount;
-            document.getElementById('weekCount').innerText = weekCount;
+            if (index >= 0 && index < allData.length) {
+                allData[index].status = newStatus;
+                renderTable(allData);
+                updateStats(allData);
+                closeStatusModal();
+            }
         }
 
         document.getElementById('searchInput').addEventListener('input', (e) => {
@@ -293,9 +481,22 @@
                 (item.fullName && item.fullName.toLowerCase().includes(term)) || 
                 (item.requestId && item.requestId.toLowerCase().includes(term)) ||
                 (item.position && item.position.toLowerCase().includes(term)) ||
-                (item.details && item.details.toLowerCase().includes(term))
+                (item.details && item.details.toLowerCase().includes(term)) ||
+                (item.status && item.status.toLowerCase().includes(term))
             );
             renderTable(filtered);
+        });
+
+        document.getElementById('statusModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('statusModal')) {
+                closeStatusModal();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.getElementById('statusModal').classList.contains('active')) {
+                closeStatusModal();
+            }
         });
 
         window.onload = () => {
@@ -303,5 +504,5 @@
             setInterval(updateLastUpdateTime, 60000);
         };
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cf565e8c1aba18c',t:'MTc3MTMzMjQ5Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cf5addff2dc8838',t:'MTc3MTMzNTQ0NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
