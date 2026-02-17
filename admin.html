@@ -336,8 +336,45 @@
         </div>
     </div>
 
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-black text-red-600 flex items-center gap-2">
+                    <i class="fa-solid fa-trash text-red-600"></i>
+                    ยืนยันการลบข้อมูล
+                </h3>
+                <button onclick="closeDeleteModal()" class="text-gray-400 hover:text-gray-600 text-2xl">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="mb-4 p-3 bg-red-50 rounded-xl border-2 border-red-200">
+                <p class="text-sm font-bold text-red-900"><span id="deleteModalRequestId">--</span> | <span id="deleteModalFullName">--</span></p>
+            </div>
+
+            <div class="mb-6 p-4 bg-yellow-50 border-2 border-yellow-200 rounded-xl">
+                <p class="text-sm text-yellow-800 flex items-start gap-2">
+                    <i class="fa-solid fa-warning text-yellow-600 mt-0.5"></i>
+                    <span><strong>คำเตือน:</strong> การลบข้อมูลนี้ไม่สามารถยกเลิกได้ กรุณาตรวจสอบให้แน่ใจก่อนดำเนินการ</span>
+                </p>
+            </div>
+
+            <input type="hidden" id="deleteModalIndex" value="">
+
+            <div class="flex gap-3">
+                <button onclick="closeDeleteModal()" class="flex-grow border-2 border-gray-300 text-gray-700 font-bold py-2.5 rounded-xl hover:bg-gray-50 transition-all">
+                    ยกเลิก
+                </button>
+                <button onclick="confirmDelete()" class="flex-grow bg-gradient-to-r from-red-600 to-red-700 text-white font-bold py-2.5 rounded-xl hover:from-red-700 hover:to-red-800 transition-all shadow-md">
+                    ยืนยันการลบ
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxvmCRnwBa4aeIYNOU4IpZc31cRz5csUfHQzJpvcKaDRsYdeHArNNCncpQmjOldWvwHog/exec'; 
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxYxjZzOYpmsOC4mizwfagtVuUbgMLTPwuZ_aw_tfVDHIjVXOCQ5uS8K9zECDs1cUra2w/exec'; 
         let allData = [];
 
         function formatDate(isoString) {
@@ -387,7 +424,7 @@
             
             if (!scriptURL || scriptURL === 'YOUR_APPS_SCRIPT_URL_HERE') {
                 allData = [
-                    { requestId: 'NP0001', submissionDate: new Date(Date.now() - 3600000), fullName: 'ตัวอย่าง สมชาย', position: 'ม.1/2', targetDate: '2025-02-20', details: 'ทำกระเป๋าตังค์หายแถวหน้าเสาธง', status: 'รอดำเนินการ' },
+                    { requestId: 'NP0001', submissionDate: new Date(Date.now() - 3600000), fullName: 'ตัวอย่าง สมชาย', position: 'ม.1/2', targetDate: '2025-02-20', details: 'ทำกระเป๋าตังค์หายที่หน้าเสาธง', status: 'รอดำเนินการ' },
                     { requestId: 'NP0002', submissionDate: new Date(Date.now() - 7200000), fullName: 'สมศรี มีดี', position: 'ม.5/4', targetDate: '2025-02-19', details: 'รถจักรยานยนต์โดนเฉี่ยวชนที่โรงจอด', status: 'กำลังดำเนินการ' },
                     { requestId: 'NP0003', submissionDate: new Date(Date.now() - 86400000), fullName: 'นายสมหวัง ใจดี', position: 'ม.3/1', targetDate: '2025-02-18', details: 'พฤติกรรมเด็กผู้ร้ายที่ห้องบัญชี', status: 'เสร็จสิ้น' }
                 ];
@@ -441,9 +478,14 @@
                         ${getStatusBadge(item.status || 'รอดำเนินการ')}
                     </td>
                     <td class="px-4 py-3 lg:px-6">
-                        <button onclick="openStatusModal(${idx}, '${item.requestId}', '${item.fullName}')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all">
-                            <i class="fa-solid fa-edit mr-1"></i>แก้ไข
-                        </button>
+                        <div class="flex gap-2 flex-wrap">
+                            <button onclick="openStatusModal(${idx}, '${item.requestId}', '${item.fullName}')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all">
+                                <i class="fa-solid fa-edit mr-1"></i>แก้ไข
+                            </button>
+                            <button onclick="openDeleteModal(${idx}, '${item.requestId}', '${item.fullName}')" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all">
+                                <i class="fa-solid fa-trash mr-1"></i>ลบ
+                            </button>
+                        </div>
                     </td>
                 </tr>
             `).join('');
@@ -477,6 +519,19 @@
             document.body.style.overflow = 'auto';
         }
 
+        function openDeleteModal(index, requestId, fullName) {
+            document.getElementById('deleteModalIndex').value = index;
+            document.getElementById('deleteModalRequestId').innerText = requestId;
+            document.getElementById('deleteModalFullName').innerText = fullName;
+            document.getElementById('deleteModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
         async function updateStatus(event) {
             event.preventDefault();
             const index = parseInt(document.getElementById('modalIndex').value);
@@ -488,7 +543,6 @@
                 submitBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin mr-2"></i>บันทึกข้อมูล...';
 
                 try {
-                    // Send status update to Google Sheets
                     const formData = new FormData();
                     formData.append('action', 'updateStatus');
                     formData.append('requestId', allData[index].requestId);
@@ -514,12 +568,53 @@
                     }
                 } catch (err) {
                     console.error('Error:', err);
-                    // Fallback: Update locally if API fails
                     allData[index].status = newStatus;
                     renderTable(allData);
                     updateStats(allData);
                     closeStatusModal();
                     showNotification('บันทึกสถานะเรียบร้อย (ท้องถิ่น)', 'warning');
+                }
+            }
+        }
+
+        async function confirmDelete() {
+            const index = parseInt(document.getElementById('deleteModalIndex').value);
+            const deleteBtn = event.target;
+            
+            if (index >= 0 && index < allData.length) {
+                deleteBtn.disabled = true;
+                deleteBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin mr-2"></i>ลบข้อมูล...';
+
+                try {
+                    const formData = new FormData();
+                    formData.append('action', 'deleteRow');
+                    formData.append('requestId', allData[index].requestId);
+
+                    const response = await fetch(scriptURL, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+                    
+                    if (result.result === 'success') {
+                        allData.splice(index, 1);
+                        renderTable(allData);
+                        updateStats(allData);
+                        closeDeleteModal();
+                        showNotification('ลบข้อมูลสำเร็จ!', 'success');
+                    } else {
+                        showNotification('เกิดข้อผิดพลาดในการลบ', 'error');
+                        deleteBtn.disabled = false;
+                        deleteBtn.innerHTML = 'ยืนยันการลบ';
+                    }
+                } catch (err) {
+                    console.error('Error:', err);
+                    allData.splice(index, 1);
+                    renderTable(allData);
+                    updateStats(allData);
+                    closeDeleteModal();
+                    showNotification('ลบข้อมูลเรียบร้อย (ท้องถิ่น)', 'warning');
                 }
             }
         }
@@ -576,9 +671,20 @@
             }
         });
 
+        document.getElementById('deleteModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('deleteModal')) {
+                closeDeleteModal();
+            }
+        });
+
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && document.getElementById('statusModal').classList.contains('active')) {
-                closeStatusModal();
+            if (e.key === 'Escape') {
+                if (document.getElementById('statusModal').classList.contains('active')) {
+                    closeStatusModal();
+                }
+                if (document.getElementById('deleteModal').classList.contains('active')) {
+                    closeDeleteModal();
+                }
             }
         });
 
@@ -587,5 +693,5 @@
             setInterval(updateLastUpdateTime, 60000);
         };
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cf5b3bb710b8838',t:'MTc3MTMzNTY4NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cf5bf3b1567a192',t:'MTc3MTMzNjE1NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
