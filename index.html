@@ -499,13 +499,18 @@
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="space-y-2">
-                                <label class="text-sm font-black text-blue-900 ml-1">ชื่อ-นามสกุล ผู้แจ้ง</label>
-                                <input type="text" name="fullName" required placeholder="เช่น นายสมชาย ใจดี" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-400 transition-all bg-white">
+                                <label class="text-sm font-black text-blue-900 ml-1">เลขที่คำร้อง</label>
+                                <input type="text" id="requestIdDisplay" disabled placeholder="กำลังสร้างเลขที่..." class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none bg-blue-50 text-blue-900 font-bold cursor-not-allowed">
                             </div>
                             <div class="space-y-2">
                                 <label class="text-sm font-black text-blue-900 ml-1">ชั้น / ตำแหน่ง</label>
                                 <input type="text" name="position" required placeholder="เช่น ม.6/1" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-400 transition-all bg-white">
                             </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-sm font-black text-blue-900 ml-1">ชื่อ-นามสกุล ผู้แจ้ง</label>
+                            <input type="text" name="fullName" required placeholder="เช่น นายสมชาย ใจดี" class="w-full border-2 border-blue-200 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-400 transition-all bg-white">
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -696,16 +701,31 @@
             renderChart(['15 ก.พ.', '16 ก.พ.', '17 ก.พ.'], [2, 5, 3]);
         }
 
-        function generateId() {
-            const lastId = localStorage.getItem('last_np_req_id') || 0;
-            const newId = parseInt(lastId) + 1;
-            localStorage.setItem('last_np_req_id', newId);
-            return 'NP' + String(newId).padStart(4, '0');
+        async function generateNextId() {
+            try {
+                const response = await fetch(`${scriptURL}?action=getLastId&t=${new Date().getTime()}`);
+                const data = await response.json();
+                let nextNumber = 1;
+                
+                if (data.result === 'success' && data.lastId) {
+                    const match = data.lastId.match(/\d+/);
+                    if (match) {
+                        nextNumber = parseInt(match[0]) + 1;
+                    }
+                }
+                
+                return 'NP' + String(nextNumber).padStart(4, '0');
+            } catch (err) {
+                console.error('Error generating ID:', err);
+                return 'NP' + String(Date.now()).slice(-4);
+            }
         }
 
-        function openModal() {
+        async function openModal() {
             document.getElementById('requestModal').classList.remove('hidden');
-            document.getElementById('requestIdInput').value = generateId();
+            const newId = await generateNextId();
+            document.getElementById('requestIdInput').value = newId;
+            document.getElementById('requestIdDisplay').value = newId;
             document.getElementById('submissionDateInput').value = new Date().toISOString();
             document.body.style.overflow = 'hidden';
         }
@@ -742,7 +762,6 @@
                 const formData = new FormData(form);
                 const params = new URLSearchParams();
                 
-                // Map form fields to sheet columns exactly
                 params.append('requestId', formData.get('requestId'));
                 params.append('submissionDate', new Date().toLocaleString('th-TH'));
                 params.append('fullName', formData.get('fullName'));
@@ -758,7 +777,6 @@
                     mode: 'no-cors'
                 });
                 
-                // Show success message
                 showToast('✅ ส่งคำร้องสำเร็จ! เลขที่: ' + formData.get('requestId'), 'success');
                 closeModal();
                 setTimeout(refreshData, 1500);
@@ -791,5 +809,6 @@
             refreshData();
         };
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cf5d5a07680a185',t:'MTc3MTMzNzA3My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cf5d5a07680a185',t:'MTc3MTMzNzA3My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cf5f2a90264a18d',t:'MTc3MTMzODI2Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
