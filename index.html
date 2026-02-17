@@ -225,6 +225,16 @@
             border: 2px solid #fbbf24;
             box-shadow: 0 15px 40px rgba(0, 82, 204, 0.15);
         }
+
+        .shake {
+            animation: shake 0.4s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
     </style>
 </head>
 <body class="antialiased flex flex-col min-h-screen">
@@ -242,10 +252,10 @@
             
             <!-- Desktop Menu -->
             <div class="flex items-center gap-4">
-                <a href="admin.html" class="hidden md:flex items-center gap-2 text-white hover:text-yellow-300 font-bold text-sm px-4 py-2 rounded-xl hover:bg-white/10 transition-all border border-white/20">
+                <button onclick="openAdminLogin()" class="hidden md:flex items-center gap-2 text-white hover:text-yellow-300 font-bold text-sm px-4 py-2 rounded-xl hover:bg-white/10 transition-all border border-white/20">
                     <i class="fa-solid fa-user-shield"></i>
                     <span>สำหรับเจ้าหน้าที่</span>
-                </a>
+                </button>
                 <button onclick="openModal()" class="submit-btn text-white px-6 py-2.5 rounded-full text-sm font-bold shadow-lg flex items-center gap-2 transition-all">
                     <i class="fa-solid fa-plus-circle"></i> <span>แจ้งเหตุ/ขอดูกล้อง</span>
                 </button>
@@ -297,9 +307,9 @@
             
             <!-- Mobile Admin Link -->
             <div class="mt-8 md:hidden">
-                <a href="admin.html" class="text-white font-bold text-sm underline flex items-center justify-center gap-1 hover:text-yellow-300">
+                <button onclick="openAdminLogin()" class="text-white font-bold text-sm underline flex items-center justify-center gap-1 hover:text-yellow-300">
                     <i class="fa-solid fa-lock"></i> เข้าสู่หน้าจัดการเจ้าหน้าที่
-                </a>
+                </button>
             </div>
         </div>
 
@@ -455,9 +465,98 @@
         </div>
     </div>
 
+    <!-- Admin Login Modal -->
+    <div id="adminModal" class="fixed inset-0 z-[100] hidden overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="fixed inset-0 bg-blue-900/70 backdrop-blur-md transition-opacity" onclick="closeAdminLogin()"></div>
+            <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all modal-content border-2 border-yellow-400">
+                <div class="bg-gradient-to-r from-yellow-500 to-yellow-600 px-8 py-6 flex justify-between items-center text-white">
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-lock text-2xl"></i>
+                        <h3 class="font-black text-xl">เข้าสู่ระบบเจ้าหน้าที่</h3>
+                    </div>
+                    <button onclick="closeAdminLogin()" class="hover:bg-white/20 p-2 rounded-full transition-colors">
+                        <i class="fa-solid fa-xmark text-xl"></i>
+                    </button>
+                </div>
+                <div class="p-8 bg-blue-50">
+                    <div class="mb-6 p-4 bg-yellow-50 rounded-xl border-2 border-yellow-200">
+                        <p class="text-sm text-yellow-800 font-bold"><i class="fa-solid fa-key mr-2"></i>กรุณากรอกรหัสผ่านเพื่อเข้าสู่ระบบเจ้าหน้าที่</p>
+                    </div>
+
+                    <form id="adminLoginForm" class="space-y-4" onsubmit="handleAdminLogin(event)">
+                        <div class="space-y-2">
+                            <label class="text-sm font-black text-blue-900 ml-1">รหัสผ่าน</label>
+                            <input type="password" id="adminPassword" placeholder="กรอกรหัสผ่าน..." required class="w-full border-2 border-yellow-300 p-3.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 transition-all bg-white">
+                        </div>
+
+                        <div id="passwordError" class="p-3 bg-red-50 border-2 border-red-300 rounded-xl text-red-700 text-sm font-bold hidden flex items-center gap-2">
+                            <i class="fa-solid fa-exclamation-circle"></i>
+                            <span>รหัสผ่านไม่ถูกต้อง</span>
+                        </div>
+
+                        <button type="submit" class="submit-btn w-full text-white py-3 rounded-xl font-black flex items-center justify-center gap-2 shadow-lg">
+                            <i class="fa-solid fa-arrow-right"></i>
+                            <span>เข้าสู่ระบบ</span>
+                        </button>
+                    </form>
+
+                    <p class="text-center text-xs text-slate-500 mt-6">หากลืมรหัสผ่าน โปรดติดต่อครูหัวหน้าฝ่ายกิจการ</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         const scriptURL = 'https://script.google.com/macros/s/AKfycbxYxjZzOYpmsOC4mizwfagtVuUbgMLTPwuZ_aw_tfVDHIjVXOCQ5uS8K9zECDs1cUra2w/exec'; 
         let myChart;
+
+        function openAdminLogin() {
+            document.getElementById('adminModal').classList.remove('hidden');
+            document.getElementById('adminPassword').focus();
+            document.getElementById('passwordError').classList.add('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeAdminLogin() {
+            document.getElementById('adminModal').classList.add('hidden');
+            document.getElementById('adminPassword').value = '';
+            document.getElementById('passwordError').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        function handleAdminLogin(event) {
+            event.preventDefault();
+            const password = document.getElementById('adminPassword').value;
+            const errorDiv = document.getElementById('passwordError');
+            const modal = document.getElementById('adminModal');
+
+            if (password === 'nongki') {
+                sessionStorage.setItem('adminAuthenticated', 'true');
+                modal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+                window.location.href = 'admin.html';
+            } else {
+                errorDiv.classList.remove('hidden');
+                modal.classList.add('shake');
+                document.getElementById('adminPassword').value = '';
+                setTimeout(() => {
+                    modal.classList.remove('shake');
+                }, 400);
+            }
+        }
+
+        document.getElementById('adminPassword')?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleAdminLogin(e);
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !document.getElementById('adminModal').classList.contains('hidden')) {
+                closeAdminLogin();
+            }
+        });
 
         async function refreshData() {
             const statusLabel = document.getElementById('syncStatus');
@@ -598,5 +697,5 @@
             refreshData();
         };
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cf55bd0261ca18c',t:'MTc3MTMzMjA4NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cf56b6a968da18c',t:'MTc3MTMzMjcyMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
