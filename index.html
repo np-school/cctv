@@ -267,6 +267,16 @@
         .step-number {
             display: none;
         }
+
+        /* Toast Styles */
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .toast {
+            animation: slideIn 0.3s ease-out;
+        }
     </style>
 </head>
 <body class="antialiased flex flex-col min-h-screen">
@@ -706,30 +716,55 @@
             document.getElementById('cctvForm').reset();
         }
 
+        function showToast(message, type) {
+            const toast = document.createElement('div');
+            toast.className = 'toast fixed top-24 right-5 px-6 py-3 rounded-lg font-bold text-sm z-50';
+            toast.textContent = message;
+            toast.style.background = type === 'success' ? '#10b981' : '#ef4444';
+            toast.style.color = 'white';
+            toast.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
         document.getElementById('cctvForm').addEventListener('submit', async e => {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
             const loader = document.getElementById('btnLoader');
             const text = document.getElementById('btnText');
-
-            if (!scriptURL || scriptURL === 'https://script.google.com/macros/s/AKfycbxF6RomnCIexvF5Atb6AFYnAuwBFLsUzl9NsiUxtTrErGMyma4xwhgsyS0pKl1T-JVLBw/exec') {
-                alert('กรุณาตั้งค่า Script URL ก่อนครับ');
-                return;
-            }
+            const form = e.target;
 
             btn.disabled = true;
             loader.classList.remove('hidden');
             text.innerText = "กำลังส่งข้อมูล...";
 
             try {
-                const response = await fetch(scriptURL, { method: 'POST', body: new FormData(e.target) });
-                const result = await response.json();
-                if (result.result === 'success') {
-                    alert('ส่งคำร้องสำเร็จ!');
-                    closeModal();
-                    setTimeout(refreshData, 2000); 
-                } else { throw new Error(result.error); }
-            } catch (err) { alert('เกิดข้อผิดพลาด: ' + err.message); }
+                const formData = new FormData(form);
+                const params = new URLSearchParams();
+                
+                // Map form fields to sheet columns exactly
+                params.append('requestId', formData.get('requestId'));
+                params.append('submissionDate', new Date().toLocaleString('th-TH'));
+                params.append('fullName', formData.get('fullName'));
+                params.append('position', formData.get('position'));
+                params.append('phone', formData.get('phone'));
+                params.append('targetDate', formData.get('targetDate'));
+                params.append('details', formData.get('details'));
+                params.append('status', 'รอดำเนิน');
+
+                const response = await fetch(scriptURL, { 
+                    method: 'POST', 
+                    body: params,
+                    mode: 'no-cors'
+                });
+                
+                // Show success message
+                showToast('✅ ส่งคำร้องสำเร็จ! เลขที่: ' + formData.get('requestId'), 'success');
+                closeModal();
+                setTimeout(refreshData, 1500);
+            } catch (err) { 
+                showToast('❌ เกิดข้อผิดพลาด: ' + err.message, 'error');
+            }
             finally {
                 btn.disabled = false;
                 loader.classList.add('hidden');
@@ -756,8 +791,5 @@
             refreshData();
         };
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cf5a39136398838',t:'MTc3MTMzNTAyMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cf5d5a07680a185',t:'MTc3MTMzNzA3My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
-
-
-
