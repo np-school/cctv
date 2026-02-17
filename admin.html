@@ -12,34 +12,68 @@
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        body { font-family: 'Sarabun', sans-serif; background-color: #f1f5f9; color: #334155; }
-        .glass-header { background: rgba(30, 58, 138, 0.95); backdrop-filter: blur(8px); }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        body { font-family: 'Sarabun', sans-serif; background: linear-gradient(135deg, #003d99 0%, #0052cc 50%, #003d99 100%); color: #334155; min-height: 100vh; }
+        .glass-header { background: linear-gradient(90deg, rgba(0, 61, 153, 0.98) 0%, rgba(0, 82, 204, 0.98) 100%); backdrop-filter: blur(20px); border-bottom: 3px solid #fbbf24; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(71, 85, 105, 0.2); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #fbbf24, #f59e0b); border-radius: 10px; }
         
         .loader-big { 
-            border: 4px solid #f3f3f3; 
-            border-top: 4px solid #1e3a8a; 
+            border: 4px solid rgba(251, 191, 36, 0.2); 
+            border-top: 4px solid #fbbf24; 
             border-radius: 50%; 
             width: 40px; 
             height: 40px; 
             animation: spin 1s linear infinite; 
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .stat-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid #0052cc;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 40px rgba(0, 82, 204, 0.25);
+            border-left-color: #fbbf24;
+        }
+
+        .table-row-highlight {
+            transition: all 0.2s ease;
+        }
+
+        .table-row-highlight:hover {
+            background-color: #fffef0;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
     <!-- Header -->
     <header class="glass-header text-white sticky top-0 z-50 shadow-lg">
-        <div class="max-w-7xl mx-auto px-4 h-16 flex justify-between items-center">
+        <div class="max-w-7xl mx-auto px-4 h-16 md:h-20 flex justify-between items-center">
             <div class="flex items-center gap-3">
-                <i class="fa-solid fa-shield-halved text-yellow-400 text-xl"></i>
-                <h1 class="font-bold text-lg md:text-xl">ระบบจัดการสำหรับเจ้าหน้าที่</h1>
+                <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                    <i class="fa-solid fa-shield-halved text-yellow-300 text-xl"></i>
+                </div>
+                <div class="flex flex-col">
+                    <h1 class="font-black text-lg md:text-xl leading-tight">ระบบจัดการ</h1>
+                    <span class="text-xs text-yellow-200 font-medium">สำหรับเจ้าหน้าที่</span>
+                </div>
             </div>
-            <!-- แก้ไขลิงก์กลับหน้าหลักให้เป็น index.html -->
-            <a href="index.html" class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg text-sm transition-all flex items-center gap-2 font-bold">
-                <i class="fa-solid fa-arrow-left"></i> <span>กลับหน้าหลัก</span>
+            <a href="index.html" class="bg-white/15 hover:bg-white/25 px-4 py-2.5 rounded-xl text-sm transition-all flex items-center gap-2 font-bold border border-white/20">
+                <i class="fa-solid fa-arrow-left"></i> <span class="hidden sm:inline">กลับหน้าหลัก</span>
             </a>
         </div>
     </header>
@@ -47,65 +81,96 @@
     <main class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-8">
         <!-- Dashboard Summary -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                <div class="text-blue-600 mb-2"><i class="fa-solid fa-list-check text-2xl"></i></div>
-                <div class="text-2xl font-black text-slate-800" id="totalCount">0</div>
-                <div class="text-xs font-bold text-slate-400 uppercase">คำร้องทั้งหมด</div>
+            <div class="stat-card p-5 rounded-2xl shadow-md border border-blue-100 fade-in">
+                <div class="flex justify-between items-start mb-2">
+                    <i class="fa-solid fa-inbox text-blue-600 text-2xl"></i>
+                    <span class="text-xs font-bold text-white bg-blue-600 px-2 py-1 rounded-full">ทั้งหมด</span>
+                </div>
+                <div class="text-3xl font-black text-slate-800" id="totalCount">0</div>
+                <div class="text-xs font-bold text-slate-400 uppercase mt-1">คำร้องทั้งหมด</div>
             </div>
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                <div class="text-amber-500 mb-2"><i class="fa-solid fa-clock text-2xl"></i></div>
-                <div class="text-2xl font-black text-slate-800" id="todayCount">0</div>
-                <div class="text-xs font-bold text-slate-400 uppercase">คำร้องวันนี้</div>
+
+            <div class="stat-card p-5 rounded-2xl shadow-md border border-yellow-100 fade-in" style="animation-delay: 0.1s;">
+                <div class="flex justify-between items-start mb-2">
+                    <i class="fa-solid fa-hourglass-end text-yellow-500 text-2xl"></i>
+                    <span class="text-xs font-bold text-white bg-yellow-500 px-2 py-1 rounded-full">วันนี้</span>
+                </div>
+                <div class="text-3xl font-black text-slate-800" id="todayCount">0</div>
+                <div class="text-xs font-bold text-slate-400 uppercase mt-1">คำร้องวันนี้</div>
             </div>
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                <div class="text-green-600 mb-2"><i class="fa-solid fa-signal text-2xl"></i></div>
-                <div class="text-2xl font-black text-slate-800" id="statusLabel">Online</div>
-                <div class="text-xs font-bold text-slate-400 uppercase">สถานะระบบ</div>
+
+            <div class="stat-card p-5 rounded-2xl shadow-md border border-green-100 fade-in" style="animation-delay: 0.2s;">
+                <div class="flex justify-between items-start mb-2">
+                    <i class="fa-solid fa-check-circle text-green-600 text-2xl"></i>
+                    <span class="text-xs font-bold text-white bg-green-600 px-2 py-1 rounded-full">สัปดาห์</span>
+                </div>
+                <div class="text-3xl font-black text-slate-800" id="weekCount">0</div>
+                <div class="text-xs font-bold text-slate-400 uppercase mt-1">คำร้องสัปดาห์นี้</div>
             </div>
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                <div class="text-indigo-600 mb-2"><i class="fa-solid fa-calendar-day text-2xl"></i></div>
-                <div class="text-sm font-bold text-slate-800" id="currentDateDisplay">...</div>
-                <div class="text-xs font-bold text-slate-400 uppercase">วันที่ปัจจุบัน</div>
+
+            <div class="stat-card p-5 rounded-2xl shadow-md border border-indigo-100 fade-in" style="animation-delay: 0.3s;">
+                <div class="flex justify-between items-start mb-2">
+                    <i class="fa-solid fa-circle-check text-indigo-600 text-2xl"></i>
+                    <span class="text-xs font-bold text-white bg-indigo-600 px-2 py-1 rounded-full">สถานะ</span>
+                </div>
+                <div id="statusLabel" class="text-3xl font-black text-green-600">●</div>
+                <div class="text-xs font-bold text-slate-400 uppercase mt-1">สถานะระบบ</div>
             </div>
         </div>
 
         <!-- Table Content -->
-        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-            <div class="p-6 border-b flex flex-col md:flex-row justify-between items-center gap-4">
-                <h2 class="font-bold text-slate-800 flex items-center gap-2">
-                    <i class="fa-solid fa-table-list text-blue-600"></i> รายการคำขอดูกล้องวงจรปิด
-                </h2>
-                <div class="flex gap-2 w-full md:w-auto">
-                    <input type="text" id="searchInput" placeholder="ค้นหาชื่อหรือเลขที่..." class="flex-grow md:w-64 border border-slate-200 p-2 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500">
-                    <button onclick="fetchAdminData()" class="bg-blue-900 text-white p-2 px-4 rounded-xl hover:bg-blue-800 transition-all text-sm font-bold flex items-center gap-2">
-                        <i class="fa-solid fa-sync-alt"></i> <span>รีเฟรช</span>
-                    </button>
+        <div class="bg-white rounded-3xl border-2 border-blue-200 shadow-lg overflow-hidden fade-in">
+            <!-- Header -->
+            <div class="p-6 border-b-2 border-yellow-300 bg-gradient-to-r from-blue-50 to-yellow-50">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <h2 class="font-black text-lg text-blue-900 flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center text-white">
+                            <i class="fa-solid fa-table-list"></i>
+                        </div>
+                        รายการคำขอดูกล้องวงจรปิด
+                    </h2>
+                    <div class="flex gap-2 w-full md:w-auto">
+                        <input type="text" id="searchInput" placeholder="ค้นหาชื่อ ID หรือชั้น..." class="flex-grow border-2 border-blue-200 p-2.5 rounded-xl text-sm outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-200 transition-all">
+                        <button onclick="fetchAdminData()" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 py-2.5 rounded-xl transition-all text-sm font-bold flex items-center gap-2 shadow-md border-2 border-yellow-300">
+                            <i class="fa-solid fa-sync-alt"></i> <span class="hidden sm:inline">รีเฟรช</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
+            <!-- Table -->
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-sm">
-                    <thead class="bg-slate-50 text-slate-500 font-bold border-b">
+                    <thead class="bg-gradient-to-r from-blue-100 to-blue-50 text-blue-900 font-bold text-xs uppercase border-b-2 border-yellow-300">
                         <tr>
-                            <th class="px-6 py-4">ID</th>
-                            <th class="px-6 py-4">ผู้แจ้งเหตุ</th>
-                            <th class="px-6 py-4">ตำแหน่ง/ชั้น</th>
-                            <th class="px-6 py-4">วันที่แจ้ง</th>
-                            <th class="px-6 py-4">เป้าหมายตรวจ</th>
-                            <th class="px-6 py-4">รายละเอียด</th>
+                            <th class="px-4 py-3 lg:px-6">ID</th>
+                            <th class="px-4 py-3 lg:px-6">ผู้แจ้งเหตุ</th>
+                            <th class="px-4 py-3 lg:px-6 hidden md:table-cell">ตำแหน่ง/ชั้น</th>
+                            <th class="px-4 py-3 lg:px-6 hidden lg:table-cell">วันที่แจ้ง</th>
+                            <th class="px-4 py-3 lg:px-6">เป้าหมายตรวจ</th>
+                            <th class="px-4 py-3 lg:px-6 hidden md:table-cell">รายละเอียด</th>
                         </tr>
                     </thead>
                     <tbody id="dataTableBody">
                         <tr>
-                            <td colspan="6" class="px-6 py-20 text-center">
+                            <td colspan="6" class="px-4 py-16 text-center">
                                 <div class="flex flex-col items-center gap-3">
                                     <div class="loader-big"></div>
-                                    <p class="text-slate-400 font-medium">กำลังโหลดข้อมูลจาก Google Sheets...</p>
+                                    <p class="text-slate-500 font-medium">กำลังโหลดข้อมูล...</p>
                                 </div>
                             </td>
                         </tr>
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Footer Stats -->
+            <div class="px-6 py-4 bg-gradient-to-r from-yellow-50 to-blue-50 border-t-2 border-yellow-300 flex justify-between items-center text-xs text-blue-700 font-bold">
+                <span>แสดง: <span id="visibleCount">0</span> รายการ</span>
+                <span id="lastUpdate" class="flex items-center gap-1">
+                    <i class="fa-solid fa-circle-check text-green-600"></i>
+                    <span>อัปเดต: --</span>
+                </span>
             </div>
         </div>
     </main>
@@ -118,7 +183,7 @@
             if(!isoString) return '-';
             const date = new Date(isoString);
             return date.toLocaleDateString('th-TH', { 
-                year: 'numeric', month: 'short', day: 'numeric', 
+                day: 'numeric', month: 'short', year: '2-digit', 
                 hour: '2-digit', minute: '2-digit' 
             });
         }
@@ -126,7 +191,16 @@
         function formatSimpleDate(isoString) {
             if(!isoString) return '-';
             const date = new Date(isoString);
-            return date.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' });
+            return date.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: '2-digit' });
+        }
+
+        function updateLastUpdateTime() {
+            const now = new Date();
+            const time = now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('lastUpdate').innerHTML = `
+                <i class="fa-solid fa-circle-check text-green-600"></i>
+                <span>อัปเดต: ${time}</span>
+            `;
         }
 
         async function fetchAdminData() {
@@ -134,11 +208,12 @@
             
             if (!scriptURL || scriptURL === 'YOUR_APPS_SCRIPT_URL_HERE') {
                 allData = [
-                    { requestId: 'NP0001', submissionDate: new Date(), fullName: 'ตัวอย่าง สมชาย', position: 'ม.1/2', targetDate: '2023-10-25', details: 'ทำกระเป๋าตังค์หายแถวหน้าเสาธง' },
-                    { requestId: 'NP0002', submissionDate: new Date(), fullName: 'สมศรี มีดี', position: 'ม.5/4', targetDate: '2023-10-24', details: 'รถจักรยานยนต์โดนเฉี่ยวชนที่โรงจอด' }
+                    { requestId: 'NP0001', submissionDate: new Date(Date.now() - 3600000), fullName: 'ตัวอย่าง สมชาย', position: 'ม.1/2', targetDate: '2025-02-20', details: 'ทำกระเป๋าตังค์หายแถวหน้าเสาธง' },
+                    { requestId: 'NP0002', submissionDate: new Date(Date.now() - 7200000), fullName: 'สมศรี มีดี', position: 'ม.5/4', targetDate: '2025-02-19', details: 'รถจักรยานยนต์โดนเฉี่ยวชนที่โรงจอด' }
                 ];
                 renderTable(allData);
                 updateStats(allData);
+                updateLastUpdateTime();
                 return;
             }
 
@@ -149,56 +224,84 @@
                     allData = data.data;
                     renderTable(allData);
                     updateStats(allData);
-                }
+                    updateLastUpdateTime();
+                } else throw new Error(data.error);
             } catch (err) {
-                tableBody.innerHTML = `<tr><td colspan="6" class="px-6 py-10 text-center text-red-500">ไม่สามารถเชื่อมต่อข้อมูลได้ กรุณาตรวจสอบ Apps Script</td></tr>`;
-                document.getElementById('statusLabel').innerText = "Error";
-                document.getElementById('statusLabel').className = "text-2xl font-black text-red-600";
+                tableBody.innerHTML = `<tr><td colspan="6" class="px-6 py-10 text-center text-red-600 font-bold"><i class="fa-solid fa-exclamation-triangle mr-2"></i>ไม่สามารถเชื่อมต่อได้</td></tr>`;
+                document.getElementById('statusLabel').innerHTML = '●';
+                document.getElementById('statusLabel').className = "text-3xl font-black text-red-600";
             }
         }
 
         function renderTable(data) {
             const tableBody = document.getElementById('dataTableBody');
             if (data.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="6" class="px-6 py-10 text-center text-slate-400 italic">ไม่พบข้อมูลคำร้อง</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-slate-400 italic">ไม่พบข้อมูลคำร้อง</td></tr>`;
+                document.getElementById('visibleCount').innerText = '0';
                 return;
             }
 
-            tableBody.innerHTML = data.map(item => `
-                <tr class="border-b hover:bg-slate-50 transition-colors">
-                    <td class="px-6 py-4 font-mono font-bold text-blue-700">${item.requestId || '-'}</td>
-                    <td class="px-6 py-4 font-bold text-slate-800">${item.fullName || '-'}</td>
-                    <td class="px-6 py-4">${item.position || '-'}</td>
-                    <td class="px-6 py-4 text-xs text-slate-500">${formatDate(item.submissionDate)}</td>
-                    <td class="px-6 py-4 font-bold text-blue-600">${formatSimpleDate(item.targetDate)}</td>
-                    <td class="px-6 py-4 max-w-xs truncate" title="${item.details}">${item.details || '-'}</td>
+            tableBody.innerHTML = data.map((item, idx) => `
+                <tr class="table-row-highlight border-b border-blue-100 transition-all duration-200">
+                    <td class="px-4 py-3 lg:px-6 font-mono font-bold text-blue-700">${item.requestId || '-'}</td>
+                    <td class="px-4 py-3 lg:px-6 font-bold text-blue-900">
+                        <div class="max-w-xs">
+                            <p class="truncate">${item.fullName || '-'}</p>
+                            <p class="text-xs text-blue-600 md:hidden">${item.position || '-'}</p>
+                        </div>
+                    </td>
+                    <td class="px-4 py-3 lg:px-6 text-blue-700 hidden md:table-cell text-sm font-medium">${item.position || '-'}</td>
+                    <td class="px-4 py-3 lg:px-6 text-xs text-blue-600 hidden lg:table-cell">${formatDate(item.submissionDate)}</td>
+                    <td class="px-4 py-3 lg:px-6 font-bold text-yellow-600 text-sm">${formatSimpleDate(item.targetDate)}</td>
+                    <td class="px-4 py-3 lg:px-6 hidden md:table-cell">
+                        <p class="text-xs text-blue-700 line-clamp-2" title="${item.details}">${item.details || '-'}</p>
+                    </td>
                 </tr>
             `).join('');
+
+            document.getElementById('visibleCount').innerText = data.length;
         }
 
         function updateStats(data) {
             document.getElementById('totalCount').innerText = data.length;
-            const todayStr = new Date().toLocaleDateString();
-            const todayCount = data.filter(item => new Date(item.submissionDate).toLocaleDateString() === todayStr).length;
+            
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            
+            const todayCount = data.filter(item => {
+                const itemDate = new Date(item.submissionDate);
+                itemDate.setHours(0,0,0,0);
+                return itemDate.getTime() === today.getTime();
+            }).length;
+            
+            const weekAgo = new Date(today);
+            weekAgo.setDate(weekAgo.getDate() - 7);
+            
+            const weekCount = data.filter(item => {
+                const itemDate = new Date(item.submissionDate);
+                itemDate.setHours(0,0,0,0);
+                return itemDate.getTime() >= weekAgo.getTime() && itemDate.getTime() <= today.getTime();
+            }).length;
+            
             document.getElementById('todayCount').innerText = todayCount;
+            document.getElementById('weekCount').innerText = weekCount;
         }
 
         document.getElementById('searchInput').addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase();
+            const term = e.target.value.toLowerCase().trim();
             const filtered = allData.filter(item => 
                 (item.fullName && item.fullName.toLowerCase().includes(term)) || 
                 (item.requestId && item.requestId.toLowerCase().includes(term)) ||
-                (item.position && item.position.toLowerCase().includes(term))
+                (item.position && item.position.toLowerCase().includes(term)) ||
+                (item.details && item.details.toLowerCase().includes(term))
             );
             renderTable(filtered);
         });
 
         window.onload = () => {
-            document.getElementById('currentDateDisplay').innerText = new Date().toLocaleDateString('th-TH', { 
-                weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
-            });
             fetchAdminData();
+            setInterval(updateLastUpdateTime, 60000);
         };
     </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cf565e8c1aba18c',t:'MTc3MTMzMjQ5Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
