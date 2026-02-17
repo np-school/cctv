@@ -35,20 +35,29 @@
             backdrop-filter: blur(12px); 
             border-bottom: 1px solid rgba(226, 232, 240, 0.8); 
         }
+        
+        /* Roster Styles */
         .roster-item {
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-width: 1px;
         }
         .roster-item.inactive { 
             filter: grayscale(1); 
-            opacity: 0.6; 
+            opacity: 0.5; 
+            background-color: #f1f5f9;
+            border-color: #e2e8f0;
+        }
+        .roster-item.inactive .day-icon {
+            background-color: #94a3b8;
         }
         .roster-item.active { 
-            transform: scale(1.02); 
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); 
-            border-width: 2px; 
-            border-color: #1e3a8a;
-            background-color: #ffffff; 
+            transform: scale(1.03); 
+            box-shadow: 0 10px 15px -3px rgba(30, 58, 138, 0.1); 
+            border-width: 2px;
+            background-color: #ffffff;
+            z-index: 10;
         }
+        
         .loader { 
             border: 3px solid rgba(255, 255, 255, 0.3); 
             border-radius: 50%; 
@@ -59,11 +68,17 @@
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Step Line Animation */
+        .step-card {
+            transition: transform 0.3s ease;
+        }
+        .step-card:hover {
+            transform: translateY(-5px);
+        }
     </style>
 </head>
 <body class="antialiased flex flex-col min-h-screen">
@@ -72,7 +87,7 @@
     <nav class="fixed w-full z-50 glass-nav">
         <div class="max-w-7xl mx-auto px-4 h-20 flex justify-between items-center">
             <div class="flex items-center gap-3">
-                <img src="http://www.nongki.ac.th/np/images/logo_np.gif" alt="Logo" class="w-12 h-12 object-contain" onerror="this.src='https://via.placeholder.com/48'">
+                <img src="https://nongki.ac.th/np2019/img/home/logo_np.gif" alt="Logo โรงเรียนหนองกี่พิทยาคม" class="w-12 h-12 object-contain" onerror="this.onerror=null; this.src='https://via.placeholder.com/48?text=NP';">
                 <div class="flex flex-col">
                     <span class="text-lg font-bold text-slate-800 leading-none">ฝ่ายกิจการนักเรียน</span>
                     <span class="text-xs text-slate-500 font-medium">โรงเรียนหนองกี่พิทยาคม</span>
@@ -86,9 +101,43 @@
 
     <!-- Main Content -->
     <main class="flex-grow pt-28 pb-12 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-7xl mx-auto mb-10 text-center">
+        <div class="max-w-7xl mx-auto mb-12 text-center">
             <h1 class="text-3xl md:text-5xl font-extrabold text-slate-900 mb-4 tracking-tight">ระบบบริหารจัดการ <span class="text-blue-700">ฝ่ายกิจการนักเรียน</span></h1>
-            <p class="text-slate-600 max-w-2xl mx-auto">ติดตามสถิติและยื่นคำร้องขอดูกล้องวงจรปิดออนไลน์ ข้อมูลอ้างอิงจากฐานข้อมูลกลาง Google Sheets</p>
+            <p class="text-slate-600 max-w-3xl mx-auto text-sm md:text-base leading-relaxed mb-10">
+                โรงเรียนหนองกี่พิทยาคมมุ่งเน้นความปลอดภัยของนักเรียนและบุคลากร โดยติดตั้งระบบกล้องวงจรปิดครอบคลุมพื้นที่อาคารเรียน สนามกีฬา และจุดเสี่ยงทั่วบริเวณโรงเรียน 
+                เพื่อการตรวจสอบเหตุการณ์และรักษาความปลอดภัยอย่างมีประสิทธิภาพตลอด 24 ชั่วโมง
+            </p>
+
+            <!-- Info Steps Section -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                <!-- Step 1 -->
+                <div class="step-card bg-white p-6 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden group">
+                    <div class="absolute -top-2 -right-2 w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center text-blue-200 font-black text-4xl group-hover:text-blue-100 transition-colors">1</div>
+                    <div class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white mb-4 shadow-lg shadow-blue-200">
+                        <i class="fa-solid fa-pen-to-square text-lg"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-800 mb-2">ยื่นคำร้องออนไลน์</h3>
+                    <p class="text-xs text-slate-500 leading-relaxed">กรอกข้อมูลรายละเอียดเหตุการณ์และจุดประสงค์การตรวจสอบผ่านระบบคำร้องออนไลน์</p>
+                </div>
+                <!-- Step 2 -->
+                <div class="step-card bg-white p-6 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden group">
+                    <div class="absolute -top-2 -right-2 w-16 h-16 bg-green-50 rounded-full flex items-center justify-center text-green-200 font-black text-4xl group-hover:text-green-100 transition-colors">2</div>
+                    <div class="w-12 h-12 bg-green-600 rounded-2xl flex items-center justify-center text-white mb-4 shadow-lg shadow-green-200">
+                        <i class="fa-solid fa-phone-volume text-lg"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-800 mb-2">ประสานงานเจ้าหน้าที่</h3>
+                    <p class="text-xs text-slate-500 leading-relaxed">ติดต่อประสานงานครูเวรประจำวันตามหมายเลขโทรศัพท์ที่ระบุ เพื่อขอนัดหมายเวลาเข้าตรวจสอบ</p>
+                </div>
+                <!-- Step 3 -->
+                <div class="step-card bg-white p-6 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden group">
+                    <div class="absolute -top-2 -right-2 w-16 h-16 bg-purple-50 rounded-full flex items-center justify-center text-purple-200 font-black text-4xl group-hover:text-purple-100 transition-colors">3</div>
+                    <div class="w-12 h-12 bg-purple-600 rounded-2xl flex items-center justify-center text-white mb-4 shadow-lg shadow-purple-200">
+                        <i class="fa-solid fa-eye text-lg"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-800 mb-2">ดำเนินการตรวจสอบ</h3>
+                    <p class="text-xs text-slate-500 leading-relaxed">เข้าดำเนินการตรวจสอบภาพจากกล้องวงจรปิด ณ ห้องปฏิบัติการ ตามวันและเวลาที่ได้นัดหมายไว้</p>
+                </div>
+            </div>
         </div>
 
         <div class="max-w-7xl mx-auto grid lg:grid-cols-3 gap-8">
@@ -97,10 +146,10 @@
                 <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm h-full flex flex-col">
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
-                            <i class="fa-solid fa-chart-column text-blue-600"></i> สถิติการแจ้งเหตุ (Real-time)
+                            <i class="fa-solid fa-chart-column text-blue-600"></i> สถิติการแจ้งเหตุ
                         </h2>
                         <div class="flex items-center gap-2">
-                            <span id="syncStatus" class="text-[10px] font-bold px-2 py-1 rounded-full bg-slate-100 text-slate-500 uppercase">Checking...</span>
+                            <span id="syncStatus" class="text-[10px] font-bold px-2 py-1 rounded-full bg-slate-100 text-slate-500 uppercase text-center min-w-[80px]">Checking...</span>
                             <button onclick="refreshData()" class="bg-slate-50 hover:bg-slate-100 text-blue-600 p-2 rounded-full transition-colors" title="รีเฟรชข้อมูล">
                                 <i class="fa-solid fa-sync-alt"></i>
                             </button>
@@ -109,52 +158,68 @@
                     <div class="chart-container flex-grow" id="chartWrapper">
                         <canvas id="dailyRequestsChart"></canvas>
                     </div>
-                    <div class="mt-4 pt-4 border-t border-slate-50">
-                        <p class="text-xs text-slate-400 italic text-center">หมายเหตุ: ข้อมูลอัปเดตอัตโนมัติเมื่อมีการแจ้งเหตุใหม่</p>
-                    </div>
                 </div>
             </div>
 
             <!-- Roster Section -->
             <div class="lg:col-span-1">
-                <div class="bg-white rounded-3xl border border-slate-200 p-6 h-full shadow-sm">
-                    <h2 class="text-xl font-bold text-slate-800 mb-6 border-b pb-4"><i class="fa-solid fa-user-shield text-blue-600 mr-2"></i>ครูเวรประจำวัน</h2>
-                    <div class="space-y-3" id="roster-list">
-                        <!-- Monday -->
-                        <div id="day-1" class="roster-item p-4 rounded-2xl border border-yellow-200 bg-yellow-50 flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-full bg-yellow-400 text-white flex items-center justify-center font-bold shadow-sm">จ</div>
+                <div class="bg-white rounded-3xl border border-slate-200 p-6 h-full shadow-sm overflow-hidden">
+                    <h2 class="text-xl font-bold text-slate-800 mb-6 border-b pb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-user-shield text-blue-600"></i>
+                        <span>ครูเวรประสานงานประจำวัน</span>
+                    </h2>
+                    <div class="space-y-3 max-h-[500px] overflow-y-auto pr-1" id="roster-list">
+                        <!-- Sunday (0) -->
+                        <div id="day-0" class="roster-item p-3 rounded-2xl flex items-center gap-4 border-red-200 bg-red-50">
+                            <div class="day-icon w-10 h-10 rounded-full bg-red-500 text-white flex items-center justify-center font-bold shadow-sm shrink-0 text-xs">อา</div>
+                            <div class="flex-grow">
+                                <p class="text-sm font-bold text-slate-800">นายนราศักดิ์ เสาวยงค์</p>
+                                <p class="text-xs text-blue-600 font-mono"><i class="fa-solid fa-phone mr-1"></i>088-696-3536</p>
+                            </div>
+                        </div>
+                        <!-- Monday (1) -->
+                        <div id="day-1" class="roster-item p-3 rounded-2xl flex items-center gap-4 border-yellow-200 bg-yellow-50">
+                            <div class="day-icon w-10 h-10 rounded-full bg-yellow-400 text-white flex items-center justify-center font-bold shadow-sm shrink-0 text-xs">จ</div>
                             <div class="flex-grow">
                                 <p class="text-sm font-bold text-slate-800">นายธนวิน เกิดประโคน</p>
                                 <p class="text-xs text-blue-600 font-mono"><i class="fa-solid fa-phone mr-1"></i>094-356-5879</p>
                             </div>
                         </div>
-                        <!-- Tuesday -->
-                        <div id="day-2" class="roster-item p-4 rounded-2xl border border-pink-200 bg-pink-50 flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-full bg-pink-400 text-white flex items-center justify-center font-bold shadow-sm">อ</div>
+                        <!-- Tuesday (2) -->
+                        <div id="day-2" class="roster-item p-3 rounded-2xl flex items-center gap-4 border-pink-200 bg-pink-50">
+                            <div class="day-icon w-10 h-10 rounded-full bg-pink-400 text-white flex items-center justify-center font-bold shadow-sm shrink-0 text-xs text-xs">อ</div>
                             <div class="flex-grow">
                                 <p class="text-sm font-bold text-slate-800">นายธนวิน เกิดประโคน</p>
                                 <p class="text-xs text-blue-600 font-mono"><i class="fa-solid fa-phone mr-1"></i>094-356-5879</p>
                             </div>
                         </div>
-                        <!-- Wednesday -->
-                        <div id="day-3" class="roster-item p-4 rounded-2xl border border-green-200 bg-green-50 flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-full bg-green-500 text-white flex items-center justify-center font-bold shadow-sm">พ</div>
+                        <!-- Wednesday (3) -->
+                        <div id="day-3" class="roster-item p-3 rounded-2xl flex items-center gap-4 border-green-200 bg-green-50">
+                            <div class="day-icon w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center font-bold shadow-sm shrink-0 text-xs">พ</div>
                             <div class="flex-grow">
                                 <p class="text-sm font-bold text-slate-800">นายนัตพล ชะเมรัมย์</p>
                                 <p class="text-xs text-blue-600 font-mono"><i class="fa-solid fa-phone mr-1"></i>065-390-4151</p>
                             </div>
                         </div>
-                        <!-- Thursday -->
-                        <div id="day-4" class="roster-item p-4 rounded-2xl border border-orange-200 bg-orange-50 flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-full bg-orange-500 text-white flex items-center justify-center font-bold shadow-sm">พฤ</div>
+                        <!-- Thursday (4) -->
+                        <div id="day-4" class="roster-item p-3 rounded-2xl flex items-center gap-4 border-orange-200 bg-orange-50">
+                            <div class="day-icon w-10 h-10 rounded-full bg-orange-500 text-white flex items-center justify-center font-bold shadow-sm shrink-0 text-xs">พฤ</div>
                             <div class="flex-grow">
                                 <p class="text-sm font-bold text-slate-800">นายนัตพล ชะเมรัมย์</p>
                                 <p class="text-xs text-blue-600 font-mono"><i class="fa-solid fa-phone mr-1"></i>065-390-4151</p>
                             </div>
                         </div>
-                        <!-- Friday -->
-                        <div id="day-5" class="roster-item p-4 rounded-2xl border border-blue-200 bg-blue-50 flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold shadow-sm">ศ</div>
+                        <!-- Friday (5) -->
+                        <div id="day-5" class="roster-item p-3 rounded-2xl flex items-center gap-4 border-blue-200 bg-blue-50">
+                            <div class="day-icon w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold shadow-sm shrink-0 text-xs">ศ</div>
+                            <div class="flex-grow">
+                                <p class="text-sm font-bold text-slate-800">นายนราศักดิ์ เสาวยงค์</p>
+                                <p class="text-xs text-blue-600 font-mono"><i class="fa-solid fa-phone mr-1"></i>088-696-3536</p>
+                            </div>
+                        </div>
+                        <!-- Saturday (6) -->
+                        <div id="day-6" class="roster-item p-3 rounded-2xl flex items-center gap-4 border-purple-200 bg-purple-50">
+                            <div class="day-icon w-10 h-10 rounded-full bg-purple-500 text-white flex items-center justify-center font-bold shadow-sm shrink-0 text-xs text-xs">ส</div>
                             <div class="flex-grow">
                                 <p class="text-sm font-bold text-slate-800">นายนราศักดิ์ เสาวยงค์</p>
                                 <p class="text-xs text-blue-600 font-mono"><i class="fa-solid fa-phone mr-1"></i>088-696-3536</p>
@@ -174,7 +239,7 @@
                 <div class="bg-blue-900 px-6 py-5 flex justify-between items-center text-white">
                     <div class="flex items-center gap-2">
                         <i class="fa-solid fa-file-circle-plus text-xl text-yellow-400"></i>
-                        <h3 class="font-bold text-lg">แบบฟอร์มแจ้งเหตุ / ขอดูกล้องวงจรปิด</h3>
+                        <h3 class="font-bold text-lg">แบบฟอร์มแจ้งเหตุ / ขอดูกล้อง</h3>
                     </div>
                     <button onclick="closeModal()" class="hover:bg-blue-800 p-1 rounded-full transition-colors">
                         <i class="fa-solid fa-xmark text-xl"></i>
@@ -188,38 +253,31 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div class="space-y-1">
                                 <label class="text-xs font-bold text-slate-500 ml-1">ชื่อ-นามสกุล ผู้แจ้ง</label>
-                                <input type="text" name="fullName" required placeholder="เช่น นายสมชาย ใจดี" class="w-full border border-slate-200 p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                                <input type="text" name="fullName" required placeholder="เช่น นายสมชาย ใจดี" class="w-full border border-slate-200 p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 transition-all">
                             </div>
                             <div class="space-y-1">
                                 <label class="text-xs font-bold text-slate-500 ml-1">ชั้น / ตำแหน่ง</label>
-                                <input type="text" name="position" required placeholder="เช่น ม.6/1 หรือ ครูหัวหน้าฝ่าย" class="w-full border border-slate-200 p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                                <input type="text" name="position" required placeholder="เช่น ม.6/1" class="w-full border border-slate-200 p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 transition-all">
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div class="space-y-1">
                                 <label class="text-xs font-bold text-slate-500 ml-1">เบอร์โทรศัพท์ติดต่อ</label>
-                                <input type="tel" name="phone" required placeholder="08x-xxx-xxxx" class="w-full border border-slate-200 p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                                <input type="tel" name="phone" required placeholder="08x-xxx-xxxx" class="w-full border border-slate-200 p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 transition-all">
                             </div>
                             <div class="space-y-1">
                                 <label class="text-xs font-bold text-slate-500 ml-1">วันที่ต้องการตรวจสอบ</label>
-                                <input type="date" name="targetDate" required class="w-full border border-slate-200 p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                                <input type="date" name="targetDate" required class="w-full border border-slate-200 p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 transition-all">
                             </div>
                         </div>
 
                         <div class="space-y-1">
                             <label class="text-xs font-bold text-slate-500 ml-1">รายละเอียดเหตุการณ์ / จุดที่ขอดู</label>
-                            <textarea name="details" rows="4" required placeholder="อธิบายลักษณะเหตุการณ์ ช่วงเวลา และจุดพิกัดที่ต้องการตรวจสอบ..." class="w-full border border-slate-200 p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"></textarea>
+                            <textarea name="details" rows="3" required placeholder="อธิบายเหตุการณ์ ช่วงเวลา และจุดที่ต้องการตรวจสอบ..." class="w-full border border-slate-200 p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 transition-all"></textarea>
                         </div>
 
-                        <div class="bg-blue-50 p-4 rounded-2xl border border-blue-100 flex gap-3 items-start">
-                            <i class="fa-solid fa-circle-info text-blue-600 mt-1"></i>
-                            <p class="text-[11px] text-blue-800 leading-relaxed">
-                                การส่งข้อมูลนี้ถือว่าผู้แจ้งยอมรับในระเบียบการขอดูกล้องวงจรปิดของโรงเรียน และข้อมูลจะถูกจัดเก็บเข้าสู่ระบบฐานข้อมูลกลางเพื่อประมวลผลสถิติและดำเนินการในลำดับถัดไป
-                            </p>
-                        </div>
-
-                        <button type="submit" id="submitBtn" class="w-full bg-blue-900 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-blue-800 active:scale-[0.98] transition-all shadow-xl shadow-blue-900/20">
+                        <button type="submit" id="submitBtn" class="w-full bg-blue-900 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-blue-800 active:scale-[0.98] transition-all shadow-xl">
                             <span id="btnLoader" class="loader hidden"></span>
                             <span id="btnText">ยืนยันการส่งคำร้อง</span>
                         </button>
@@ -230,21 +288,15 @@
     </div>
 
     <script>
-        /**
-         * สำคัญ: นำ URL ที่ได้จากขั้นตอน Deploy เป็น Web App ใน Apps Script มาใส่ที่นี่
-         * URL จะมีลักษณะคล้าย https://script.google.com/macros/s/.../exec
-         */
         const scriptURL = 'https://script.google.com/macros/s/AKfycbwqGoXNxSWr_JD42gSp0lnVaLTqvYhr4REOuarhhpxtXjGnqlG6Nx-40LnEy4u1AaVNAA/exec'; 
         let myChart;
 
-        // ฟังก์ชันดึงข้อมูลจาก Google Sheets (GET)
         async function refreshData() {
             const statusLabel = document.getElementById('syncStatus');
             statusLabel.innerText = "Syncing...";
             statusLabel.className = "text-[10px] font-bold px-2 py-1 rounded-full bg-blue-100 text-blue-600 uppercase animate-pulse";
 
             if (!scriptURL || scriptURL === 'YOUR_APPS_SCRIPT_URL_HERE') {
-                console.warn('Script URL is not set. Showing mock data.');
                 renderChart(['15 ก.พ.', '16 ก.พ.', '17 ก.พ.'], [2, 5, 3]);
                 statusLabel.innerText = "Mock Mode";
                 statusLabel.className = "text-[10px] font-bold px-2 py-1 rounded-full bg-amber-100 text-amber-600 uppercase";
@@ -252,102 +304,59 @@
             }
 
             try {
-                // เรียก API ที่เป็น doGet ใน Apps Script
-                const response = await fetch(scriptURL);
+                const response = await fetch(`${scriptURL}?t=${new Date().getTime()}`);
                 const data = await response.json();
-                
                 if (data.result === 'success') {
                     renderChart(data.labels, data.values);
                     statusLabel.innerText = "Connected";
                     statusLabel.className = "text-[10px] font-bold px-2 py-1 rounded-full bg-green-100 text-green-600 uppercase";
-                } else {
-                    throw new Error(data.error || 'Unknown error');
-                }
+                } else { throw new Error(data.error); }
             } catch (err) {
-                console.error('Error fetching stats:', err);
                 statusLabel.innerText = "Sync Failed";
                 statusLabel.className = "text-[10px] font-bold px-2 py-1 rounded-full bg-red-100 text-red-600 uppercase";
-                // แสดงข้อมูลจำลองถ้าโหลดไม่สำเร็จ
-                renderChart(['Jan', 'Feb', 'Mar'], [0, 0, 0]);
+                renderChart(['ไม่มีข้อมูล'], [0]);
             }
         }
 
-        // ฟังก์ชันวาดกราฟสถิติ
         function renderChart(labels, values) {
             const ctx = document.getElementById('dailyRequestsChart').getContext('2d');
-            
-            // ลบกราฟเดิมถ้ามีอยู่แล้ว
-            if (myChart) {
-                myChart.destroy();
-            }
-
+            if (myChart) myChart.destroy();
             myChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: labels.length ? labels : ['ไม่มีข้อมูล'],
+                    labels: labels,
                     datasets: [{
-                        label: 'จำนวนเรื่องที่แจ้ง',
-                        data: values.length ? values : [0],
+                        label: 'จำนวนการแจ้งเหตุ',
+                        data: values,
                         backgroundColor: 'rgba(30, 58, 138, 0.85)',
-                        hoverBackgroundColor: '#1e3a8a',
-                        borderRadius: 12,
-                        borderSkipped: false,
-                        maxBarThickness: 40
+                        borderRadius: 8,
+                        maxBarThickness: 45
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: '#1e293b',
-                            padding: 12,
-                            titleFont: { size: 14, weight: 'bold' },
-                            bodyFont: { size: 13 },
-                            displayColors: false,
-                            cornerRadius: 8
-                        }
-                    },
+                    plugins: { legend: { display: false } },
                     scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: { color: '#f1f5f9' },
-                            ticks: { 
-                                stepSize: 1,
-                                font: { size: 11 }
-                            }
-                        },
-                        x: {
-                            grid: { display: false },
-                            ticks: { 
-                                font: { size: 11, weight: '500' }
-                            }
-                        }
-                    },
-                    animation: {
-                        duration: 1000,
-                        easing: 'easeOutQuart'
+                        y: { beginAtZero: true, ticks: { stepSize: 1 } },
+                        x: { grid: { display: false } }
                     }
                 }
             });
         }
 
-        // ฟังก์ชันสุ่มรหัสอ้างอิงและบันทึกใน LocalStorage
         function generateId() {
-            const storageKey = 'last_np_req_id';
-            const lastId = localStorage.getItem(storageKey) || 0;
+            const lastId = localStorage.getItem('last_np_req_id') || 0;
             const newId = parseInt(lastId) + 1;
-            localStorage.setItem(storageKey, newId);
+            localStorage.setItem('last_np_req_id', newId);
             return 'NP' + String(newId).padStart(4, '0');
         }
 
-        // เปิด/ปิด Modal
         function openModal() {
             document.getElementById('requestModal').classList.remove('hidden');
             document.getElementById('requestIdInput').value = generateId();
             document.getElementById('submissionDateInput').value = new Date().toISOString();
-            document.body.style.overflow = 'hidden'; // กันเลื่อนหน้าหลัง
+            document.body.style.overflow = 'hidden';
         }
 
         function closeModal() {
@@ -356,7 +365,6 @@
             document.getElementById('cctvForm').reset();
         }
 
-        // การส่งฟอร์ม (POST)
         document.getElementById('cctvForm').addEventListener('submit', async e => {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
@@ -364,56 +372,45 @@
             const text = document.getElementById('btnText');
 
             if (!scriptURL || scriptURL === 'YOUR_APPS_SCRIPT_URL_HERE') {
-                alert('กรุณาตั้งค่า Script URL ในโค้ด (บรรทัดที่ 216) ก่อนใช้งานการบันทึกข้อมูลครับ');
+                alert('กรุณาตั้งค่า Script URL ก่อนครับ');
                 return;
             }
 
-            // UI Feedback
             btn.disabled = true;
             loader.classList.remove('hidden');
-            text.innerText = "กำลังเชื่อมต่อกับ Sheets...";
+            text.innerText = "กำลังส่งข้อมูล...";
 
             try {
-                // ส่งข้อมูลแบบ POST
-                const response = await fetch(scriptURL, { 
-                    method: 'POST', 
-                    body: new FormData(e.target) 
-                });
-                
+                const response = await fetch(scriptURL, { method: 'POST', body: new FormData(e.target) });
                 const result = await response.json();
-
                 if (result.result === 'success') {
-                    alert('บันทึกคำร้องสำเร็จ! ข้อมูลถูกจัดเก็บลงระบบเรียบร้อยแล้ว');
+                    alert('ส่งคำร้องสำเร็จ!');
                     closeModal();
-                    // อัปเดตกราฟทันทีหลังส่งข้อมูล
-                    setTimeout(refreshData, 1000); 
-                } else {
-                    throw new Error(result.error);
-                }
-            } catch (err) {
-                console.error('Submission error:', err);
-                alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล: ' + err.message);
-            } finally {
+                    setTimeout(refreshData, 2000); 
+                } else { throw new Error(result.error); }
+            } catch (err) { alert('เกิดข้อผิดพลาด: ' + err.message); }
+            finally {
                 btn.disabled = false;
                 loader.classList.add('hidden');
                 text.innerText = "ยืนยันการส่งคำร้อง";
             }
         });
 
-        // จัดการไฮไลท์ครูเวรตามวันจริง
+        // จัดการไฮไลท์รายชื่อครูเวร
         function updateRosterHighlight() {
-            const today = new Date().getDay(); // 0=Sun, 1=Mon...
+            const today = new Date().getDay(); 
             document.querySelectorAll('.roster-item').forEach(item => {
-                const dayId = item.id.split('-')[1];
-                if (parseInt(dayId) === today) {
+                const dayId = parseInt(item.id.split('-')[1]);
+                if (dayId === today) {
+                    item.classList.remove('inactive');
                     item.classList.add('active');
                 } else {
+                    item.classList.remove('active');
                     item.classList.add('inactive');
                 }
             });
         }
 
-        // เริ่มต้นการทำงานเมื่อหน้าโหลดเสร็จ
         window.onload = () => {
             updateRosterHighlight();
             refreshData();
@@ -421,5 +418,3 @@
     </script>
 </body>
 </html>
-
-
