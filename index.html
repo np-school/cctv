@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ฝ่ายกิจการนักเรียน | โรงเรียนหนองกี่พิทยาคม จ.บุรีรัมย์</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome (No SVG Files, using CDN Icons) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Chart.js (Canvas based charting) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Google Fonts: Sarabun -->
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Chosen Palette: Professional Navy & School Identity -->
+    <!-- 
+        Primary: #1e3a8a (Navy Blue) - Trust, Authority
+        Secondary: #64748b (Slate) - Balance, Text
+        Accent: #facc15 (Yellow/Gold) - Highlights, Action
+        Background: #f8fafc (Light Slate) - Cleanliness
+    -->
+
+    <style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+            scroll-behavior: smooth;
+        }
+
+        /* --- MANDATORY CHART CONTAINER STYLING --- */
+        /* Ensures chart respects parent bounds and handles responsiveness correctly */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px; /* Controlled width on large screens */
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;    /* Mobile base height */
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px; /* Tablet/Desktop height */
+            }
+        }
+
+        /* Custom Scrollbar for sleek look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+
+        /* Glassmorphism Navigation */
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        /* Interactive Card Hover Effects */
+        .card-interactive {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-interactive:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-color: #3b82f6;
+        }
+
+        /* Roster Active State Styling */
+        .roster-item.inactive {
+            filter: grayscale(1);
+            opacity: 0.6;
+            background-color: #f8fafc;
+            border-color: #e2e8f0;
+        }
+        .roster-item.active {
+            transform: scale(1.02);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-width: 2px;
+            z-index: 10;
+            background-color: #ffffff;
+        }
+
+        /* Loading Animation */
+        .loader {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid #ffffff;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+
+    <!-- Application Structure Plan:
+         1. Header & Navigation: Fixed access to key actions.
+         2. Hero Section: Immediate visual confirmation of school identity and system status.
+         3. Dashboard Metrics (Data): Quick view of system health (Cameras, Storage, Request Counts).
+         4. Analytics Section (Visuals): Interactive Bar Chart showing daily request trends.
+         5. Duty Roster (Information): Dynamic schedule highlighting the current officer on duty.
+         6. Modal Form (Interaction): The primary user task execution point (LOCKED FORMAT).
+    -->
+    
+    <!-- CONFIRMATION: NO SVG graphics used (FontAwesome only). NO Mermaid JS used. -->
+</head>
+<body class="antialiased flex flex-col min-h-screen">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 glass-nav">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <div class="flex items-center gap-3">
+                    <img src="http://www.nongki.ac.th/np/images/logo_np.gif" alt="โลโก้โรงเรียนหนองกี่พิทยาคม" class="w-12 h-12 object-contain drop-shadow-sm" onerror="this.src='https://via.placeholder.com/48?text=NP'">
+                    <div class="flex flex-col">
+                        <span class="text-lg font-bold text-slate-800 leading-none">ฝ่ายกิจการนักเรียน</span>
+                        <span class="text-xs text-slate-500 font-medium">โรงเรียนหนองกี่พิทยาคม จ.บุรีรัมย์</span>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                    <a href="#stats" class="hidden md:block text-sm font-semibold text-slate-600 hover:text-blue-900 transition">สถิติระบบ</a>
+                    <a href="#roster" class="hidden md:block text-sm font-semibold text-slate-600 hover:text-blue-900 transition">ตารางเวร</a>
+                    <button onclick="openModal()" class="bg-blue-900 hover:bg-blue-800 text-white px-5 py-2.5 rounded-full text-sm font-bold shadow-md transition transform hover:scale-105 flex items-center gap-2">
+                        <i class="fa-solid fa-plus-circle"></i> <span>แจ้งเหตุ/ขอดูกล้อง</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Wrapper -->
+    <main class="flex-grow pt-28 pb-12 px-4 sm:px-6 lg:px-8">
+        
+        <!-- Section 1: Hero & System Status -->
+        <!-- Purpose: Provide immediate context and operational status summary. -->
+        <div class="max-w-7xl mx-auto mb-16">
+            <div class="text-center mb-12 animate-fade-in-up">
+                <img src="http://www.nongki.ac.th/np/images/logo_np.gif" alt="School Logo" class="w-24 h-24 mx-auto mb-6 object-contain drop-shadow-xl" onerror="this.style.display='none'">
+                <div class="inline-flex items-center gap-2 py-1 px-4 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-xs font-bold uppercase tracking-wider mb-4 shadow-sm">
+                    <span class="relative flex h-2 w-2">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                    </span>
+                    ระบบออนไลน์ปกติ
+                </div>
+                <h1 class="text-3xl md:text-5xl font-extrabold text-slate-900 mb-4 leading-tight tracking-tight">
+                    ระบบบริหารจัดการ <br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-indigo-600">ฝ่ายกิจการนักเรียน</span>
+                </h1>
+                <p class="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
+                    ศูนย์รับแจ้งเหตุและบริการตรวจสอบกล้องวงจรปิด เพื่อยกระดับความปลอดภัยและระเบียบวินัย โรงเรียนหนองกี่พิทยาคม
+                </p>
+            </div>
+
+            <!-- Dashboard Cards: Key Metrics -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <!-- Card 1 -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 card-interactive text-center">
+                    <div class="text-slate-400 text-[10px] font-bold uppercase mb-2 tracking-widest">จำนวนกล้อง</div>
+                    <div class="text-3xl font-extrabold text-slate-800">48</div>
+                    <div class="text-xs text-slate-500 mt-1 font-medium">จุดเชื่อมต่อ (Active)</div>
+                </div>
+                <!-- Card 2 -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 card-interactive text-center">
+                    <div class="text-slate-400 text-[10px] font-bold uppercase mb-2 tracking-widest">บันทึกย้อนหลัง</div>
+                    <div class="text-3xl font-extrabold text-slate-800">15</div>
+                    <div class="text-xs text-slate-500 mt-1 font-medium">วันทำการ</div>
+                </div>
+                <!-- Card 3 -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 card-interactive text-center">
+                    <div class="text-slate-400 text-[10px] font-bold uppercase mb-2 tracking-widest">คำร้องทั้งหมด</div>
+                    <div class="text-3xl font-extrabold text-slate-800">124</div>
+                    <div class="text-xs text-slate-500 mt-1 font-medium">รายการสะสม</div>
+                </div>
+                <!-- Card 4 -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 card-interactive text-center border-b-4 border-b-green-500">
+                    <div class="text-slate-400 text-[10px] font-bold uppercase mb-2 tracking-widest">ดำเนินการสำเร็จ</div>
+                    <div class="text-3xl font-extrabold text-green-600">118</div>
+                    <div class="text-xs text-slate-500 mt-1 font-medium">รายการเสร็จสิ้น</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="max-w-7xl mx-auto grid lg:grid-cols-3 gap-8">
+            
+            <!-- Section 2: Analytics (Chart.js) -->
+            <!-- Purpose: Visualize request trends to identify peak times. -->
+            <div class="lg:col-span-2" id="stats">
+                <div class="bg-white rounded-3xl border border-slate-200 p-6 md:p-8 shadow-sm h-full flex flex-col">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-chart-column text-blue-600"></i> สถิติการแจ้งเหตุรายวัน
+                            </h2>
+                            <p class="text-sm text-slate-500 mt-1">ข้อมูลจำนวนคำร้องจำแนกรายวัน (30 วันล่าสุด)</p>
+                        </div>
+                        <div class="flex items-center gap-2 px-3 py-1 bg-slate-50 rounded-lg border border-slate-100">
+                            <span class="w-2 h-2 bg-blue-600 rounded-full"></span> 
+                            <span class="text-xs font-bold text-slate-600">จำนวนคำร้อง (ครั้ง)</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Chart Container Wrapper -->
+                    <div class="chart-container flex-grow">
+                        <canvas id="dailyRequestsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: Duty Roster -->
+            <!-- Purpose: Display staff contact info dynamically based on day of week. -->
+            <div class="lg:col-span-1" id="roster">
+                <div class="bg-white rounded-3xl border border-slate-200 p-6 h-full shadow-sm">
+                    <div class="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
+                        <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-user-shield text-blue-600"></i> เวรประจำวัน
+                        </h2>
+                        <span class="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-1 rounded border border-blue-100">วันนี้</span>
+                    </div>
+                    
+                    <!-- Dynamic Roster List -->
+                    <div class="space-y-3" id="roster-list">
+                        <!-- Monday -->
+                        <div id="day-1" class="roster-item p-4 rounded-xl border border-yellow-200 bg-yellow-50 flex items-center gap-4 transition-all duration-300">
+                            <div class="w-10 h-10 rounded-full bg-yellow-400 text-white flex items-center justify-center font-bold text-sm shadow-sm">จ</div>
+                            <div class="flex-grow">
+                                <p class="text-sm font-bold text-slate-800">นายธนวิน เกิดประโคน</p>
+                                <p class="text-xs text-blue-600 font-medium font-mono">094-356-5879</p>
+                            </div>
+                        </div>
+                        <!-- Tuesday -->
+                        <div id="day-2" class="roster-item p-4 rounded-xl border border-pink-200 bg-pink-50 flex items-center gap-4 transition-all duration-300">
+                            <div class="w-10 h-10 rounded-full bg-pink-400 text-white flex items-center justify-center font-bold text-sm shadow-sm">อ</div>
+                            <div class="flex-grow">
+                                <p class="text-sm font-bold text-slate-800">นายธนวิน เกิดประโคน</p>
+                                <p class="text-xs text-blue-600 font-medium font-mono">094-356-5879</p>
+                            </div>
+                        </div>
+                        <!-- Wednesday -->
+                        <div id="day-3" class="roster-item p-4 rounded-xl border border-green-200 bg-green-50 flex items-center gap-4 transition-all duration-300">
+                            <div class="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center font-bold text-sm shadow-sm">พ</div>
+                            <div class="flex-grow">
+                                <p class="text-sm font-bold text-slate-800">นายนัตพล ชะเมรัมย์</p>
+                                <p class="text-xs text-blue-600 font-medium font-mono">065-390-4151</p>
+                            </div>
+                        </div>
+                        <!-- Thursday -->
+                        <div id="day-4" class="roster-item p-4 rounded-xl border border-orange-200 bg-orange-50 flex items-center gap-4 transition-all duration-300">
+                            <div class="w-10 h-10 rounded-full bg-orange-500 text-white flex items-center justify-center font-bold text-sm shadow-sm">พฤ</div>
+                            <div class="flex-grow">
+                                <p class="text-sm font-bold text-slate-800">นายนัตพล ชะเมรัมย์</p>
+                                <p class="text-xs text-blue-600 font-medium font-mono">065-390-4151</p>
+                            </div>
+                        </div>
+                        <!-- Friday -->
+                        <div id="day-5" class="roster-item p-4 rounded-xl border border-blue-200 bg-blue-50 flex items-center gap-4 transition-all duration-300">
+                            <div class="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-sm shadow-sm">ศ</div>
+                            <div class="flex-grow">
+                                <p class="text-sm font-bold text-slate-800">นายนราศักดิ์ เสาวยงค์</p>
+                                <p class="text-xs text-blue-600 font-medium font-mono">088-696-3536</p>
+                            </div>
+                        </div>
+                        <!-- Saturday -->
+                        <div id="day-6" class="roster-item p-4 rounded-xl border border-purple-200 bg-purple-50 flex items-center gap-4 transition-all duration-300">
+                            <div class="w-10 h-10 rounded-full bg-purple-500 text-white flex items-center justify-center font-bold text-sm shadow-sm">ส</div>
+                            <div class="flex-grow">
+                                <p class="text-sm font-bold text-slate-800">นายนราศักดิ์ เสาวยงค์</p>
+                                <p class="text-xs text-blue-600 font-medium font-mono">088-696-3536</p>
+                            </div>
+                        </div>
+                        <!-- Sunday -->
+                        <div id="day-0" class="roster-item p-4 rounded-xl border border-red-200 bg-red-50 flex items-center gap-4 transition-all duration-300">
+                            <div class="w-10 h-10 rounded-full bg-red-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">อา</div>
+                            <div class="flex-grow">
+                                <p class="text-sm font-bold text-slate-800">นายนราศักดิ์ เสาวยงค์</p>
+                                <p class="text-xs text-blue-600 font-medium font-mono">088-696-3536</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-12 border-t border-slate-800 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p class="text-white font-bold text-lg mb-1">โรงเรียนหนองกี่พิทยาคม จ.บุรีรัมย์</p>
+            <p class="text-sm font-medium opacity-80">ฝ่ายกิจการนักเรียน (Student Affairs Department)</p>
+            <div class="w-12 h-1 bg-blue-600 mx-auto my-6 rounded-full"></div>
+            <p class="text-xs text-slate-600">&copy; 2026 ฝ่ายกิจการนักเรียน. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- 
+        ========================================
+        MODAL FORM (LOCKED STRUCTURE)
+        ========================================
+        CRITICAL: Do not change IDs or Name attributes. 
+        This ensures compatibility with Google Sheets script.
+    -->
+    <div id="requestModal" class="fixed inset-0 z-[100] hidden overflow-y-auto" role="dialog" aria-modal="true">
+        <div class="flex items-center justify-center min-h-screen p-4 sm:p-6">
+            <!-- Backdrop -->
+            <div class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm transition-opacity" onclick="closeModal()"></div>
+            
+            <!-- Modal Panel -->
+            <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden transform transition-all scale-100">
+                
+                <!-- Header -->
+                <div class="bg-blue-900 px-6 py-4 flex justify-between items-center text-white">
+                    <h3 class="text-lg font-bold flex items-center gap-2">
+                        <i class="fa-solid fa-file-signature"></i> แจ้งเหตุ / ขอดูกล้องวงจรปิด
+                    </h3>
+                    <button onclick="closeModal()" class="text-blue-200 hover:text-white transition p-1 rounded-md hover:bg-blue-800">
+                        <i class="fa-solid fa-xmark text-xl"></i>
+                    </button>
+                </div>
+
+                <!-- Body -->
+                <div class="p-6 md:p-8">
+                    <!-- Info Box -->
+                    <div class="flex justify-between items-center bg-slate-50 p-4 rounded-xl border border-slate-200 mb-6">
+                        <div>
+                            <p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">รหัสอ้างอิง</p>
+                            <p class="text-xl font-mono font-bold text-blue-700" id="displayRequestId">NP0000</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">วันที่ส่งคำร้อง</p>
+                            <p class="text-sm font-bold text-slate-700" id="displayDate">--/--/----</p>
+                        </div>
+                    </div>
+
+                    <!-- Form Fields -->
+                    <form id="cctvForm" class="space-y-5">
+                        <!-- Hidden Inputs -->
+                        <input type="hidden" name="requestId" id="requestIdInput">
+                        <input type="hidden" name="submissionDate" id="submissionDateInput">
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">ชื่อ-นามสกุล <span class="text-red-500">*</span></label>
+                                <input type="text" name="fullName" required class="w-full rounded-lg border-slate-300 border px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition" placeholder="ชื่อผู้แจ้ง...">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">ระดับชั้น/ตำแหน่ง <span class="text-red-500">*</span></label>
+                                <input type="text" name="position" required class="w-full rounded-lg border-slate-300 border px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition" placeholder="เช่น ม.1/1 หรือ ครู...">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">เบอร์โทรศัพท์ติดต่อ <span class="text-red-500">*</span></label>
+                                <input type="tel" name="phone" required class="w-full rounded-lg border-slate-300 border px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition" placeholder="08x-xxxxxxx">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">วันที่เกิดเหตุ <span class="text-red-500">*</span></label>
+                                <input type="date" name="targetDate" required class="w-full rounded-lg border-slate-300 border px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">เหตุการณ์/จุดที่ต้องการตรวจสอบ <span class="text-red-500">*</span></label>
+                            <textarea name="details" rows="3" required class="w-full rounded-lg border-slate-300 border px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition" placeholder="ระบุเหตุการณ์และสถานที่เกิดเหตุโดยละเอียด..."></textarea>
+                        </div>
+
+                        <div class="pt-4 flex gap-3">
+                            <button type="submit" id="submitBtn" class="flex-1 bg-blue-900 hover:bg-blue-800 text-white py-3 rounded-xl font-bold shadow-lg transition flex items-center justify-center gap-2 active:scale-95">
+                                <span id="btnLoader" class="loader hidden"></span>
+                                <span id="btnText">ส่งคำร้องไปยังฝ่ายกิจการฯ</span>
+                            </button>
+                            <button type="button" onclick="closeModal()" class="px-6 py-3 rounded-xl font-bold text-slate-600 hover:bg-slate-100 transition border border-slate-200">
+                                ยกเลิก
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // CONFIGURATION: Replace with your Google Apps Script Web App URL
+        const scriptURL = 'YOUR_APPS_SCRIPT_URL_HERE'; 
+
+        // --- 1. Roster Logic (Dynamic Day Highlight) ---
+        function updateRosterHighlight() {
+            const today = new Date().getDay(); // 0 (Sun) to 6 (Sat)
+            document.querySelectorAll('.roster-item').forEach(item => {
+                if (item.id === `day-${today}`) {
+                    item.classList.add('active');
+                    item.classList.remove('inactive');
+                } else {
+                    item.classList.add('inactive');
+                    item.classList.remove('active');
+                }
+            });
+        }
+
+        // --- 2. Chart Logic (Bar Chart - Daily Stats) ---
+        function getLast30Days() {
+            const labels = [];
+            const data = [];
+            for (let i = 29; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                labels.push(d.toLocaleDateString('th-TH', { day: 'numeric', month: 'short' }));
+                // Mock data generator (Random 0-12 requests)
+                data.push(Math.floor(Math.random() * 12)); 
+            }
+            return { labels, data };
+        }
+
+        function initChart() {
+            const ctx = document.getElementById('dailyRequestsChart').getContext('2d');
+            const { labels, data } = getLast30Days();
+
+            new Chart(ctx, {
+                type: 'bar', // Requested: Bar Chart
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'จำนวนการแจ้งเหตุ',
+                        data: data,
+                        backgroundColor: '#2563eb', // Standard Blue
+                        hoverBackgroundColor: '#1e3a8a', // Darker Blue on Hover
+                        borderRadius: 4,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#1e293b',
+                            titleFont: { family: 'Sarabun', size: 14 },
+                            bodyFont: { family: 'Sarabun', size: 13 },
+                            padding: 12,
+                            cornerRadius: 8,
+                            displayColors: false,
+                            callbacks: {
+                                title: (context) => `วันที่ ${context[0].label}`
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#f1f5f9', drawBorder: false },
+                            ticks: { 
+                                stepSize: 1, 
+                                precision: 0, 
+                                color: '#94a3b8',
+                                font: { family: 'Sarabun' }
+                            }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { 
+                                maxRotation: 45, 
+                                minRotation: 45, 
+                                font: { size: 10, family: 'Sarabun' },
+                                color: '#94a3b8'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // --- 3. Modal & Form Logic (LOCKED) ---
+        const modal = document.getElementById('requestModal');
+        const form = document.getElementById('cctvForm');
+
+        // ID Generator: NPxxxx format
+        function generateId() {
+            const storageKey = 'last_np_req_id';
+            const lastId = localStorage.getItem(storageKey) || 0;
+            const newId = parseInt(lastId) + 1;
+            localStorage.setItem(storageKey, newId);
+            return 'NP' + String(newId).padStart(4, '0');
+        }
+
+        function openModal() {
+            modal.classList.remove('hidden');
+            const id = generateId();
+            const date = new Date().toLocaleDateString('th-TH');
+            
+            // Set Display Values
+            document.getElementById('displayRequestId').innerText = id;
+            document.getElementById('displayDate').innerText = date;
+            
+            // Set Form Values
+            document.getElementById('requestIdInput').value = id;
+            document.getElementById('submissionDateInput').value = new Date().toISOString();
+            
+            // Lock Scroll
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            form.reset();
+        }
+
+        // Submission Handling
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            const text = document.getElementById('btnText');
+            const loader = document.getElementById('btnLoader');
+
+            // Safety Check
+            if (scriptURL === 'YOUR_APPS_SCRIPT_URL_HERE') {
+                alert('คำเตือน: ยังไม่ได้ติดตั้ง Script URL สำหรับเชื่อมต่อ Google Sheets');
+                return;
+            }
+
+            // Loading State
+            btn.disabled = true;
+            text.innerText = "กำลังส่งข้อมูล...";
+            loader.classList.remove('hidden');
+
+            const formData = new FormData(form);
+
+            // Fetch
+            fetch(scriptURL, { method: 'POST', body: formData })
+                .then(response => {
+                    const reqId = document.getElementById('requestIdInput').value;
+                    alert(`ส่งคำร้องเรียบร้อยแล้ว\nรหัสอ้างอิง: ${reqId}\nเจ้าหน้าที่จะดำเนินการตรวจสอบโดยเร็วที่สุด`);
+                    closeModal();
+                })
+                .catch(error => {
+                    console.error('Error!', error.message);
+                    alert('เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง');
+                })
+                .finally(() => {
+                    // Reset State
+                    btn.disabled = false;
+                    text.innerText = "ส่งคำร้องไปยังฝ่ายกิจการฯ";
+                    loader.classList.add('hidden');
+                });
+        });
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', () => {
+            initChart();
+            updateRosterHighlight();
+        });
+    </script>
+</body>
+</html>
