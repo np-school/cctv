@@ -374,7 +374,7 @@
     </div>
 
     <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxF6RomnCIexvF5Atb6AFYnAuwBFLsUzl9NsiUxtTrErGMyma4xwhgsyS0pKl1T-JVLBw/exec'; 
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzpFBmIa4cc9HotpRd0AK_mP7YH2JB-pagS7WKD0UrWlIUZjuUyY0fBT3TkXTvKYBYUbg/exec'; 
         let allData = [];
 
         function formatDate(isoString) {
@@ -422,7 +422,7 @@
         async function fetchAdminData() {
             const tableBody = document.getElementById('dataTableBody');
             
-            if (!scriptURL || scriptURL === 'YOUR_APPS_SCRIPT_URL_HERE') {
+            if (!scriptURL || scriptURL === 'https://script.google.com/macros/s/AKfycbzpFBmIa4cc9HotpRd0AK_mP7YH2JB-pagS7WKD0UrWlIUZjuUyY0fBT3TkXTvKYBYUbg/exec') {
                 allData = [
                     { requestId: 'NP0001', submissionDate: new Date(Date.now() - 3600000), fullName: 'ตัวอย่าง สมชาย', position: 'ม.1/2', targetDate: '2025-02-20', details: 'ทำกระเป๋าตังค์หายที่หน้าเสาธง', status: 'รอดำเนินการ' },
                     { requestId: 'NP0002', submissionDate: new Date(Date.now() - 7200000), fullName: 'สมศรี มีดี', position: 'ม.5/4', targetDate: '2025-02-19', details: 'รถจักรยานยนต์โดนเฉี่ยวชนที่โรงจอด', status: 'กำลังดำเนินการ' },
