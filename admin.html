@@ -257,7 +257,7 @@
                         <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center text-white">
                             <i class="fa-solid fa-table-list"></i>
                         </div>
-                        รายการคำขอดูกล้องวงจรปิด
+                        รายการคำขอใช้ข้อมูลกล้องวงจรปิด
                     </h2>
                     <div class="flex gap-2 w-full md:w-auto">
                         <input type="text" id="searchInput" placeholder="ค้นหาชื่อ ID หรือชั้น..." class="flex-grow border-2 border-blue-200 p-2.5 rounded-xl text-sm outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition-all bg-white">
@@ -273,14 +273,14 @@
                 <table class="w-full text-left text-sm">
                     <thead class="bg-gradient-to-r from-blue-100 to-blue-50 text-blue-900 font-bold text-xs uppercase border-b-2 border-blue-200">
                         <tr>
-                            <th class="px-4 py-3 lg:px-6">ID</th>
-                            <th class="px-4 py-3 lg:px-6">ผู้แจ้งเหตุ</th>
-                            <th class="px-4 py-3 lg:px-6 hidden md:table-cell">ตำแหน่ง/ชั้น</th>
-                            <th class="px-4 py-3 lg:px-6 hidden lg:table-cell">วันที่แจ้ง</th>
-                            <th class="px-4 py-3 lg:px-6">เป้าหมายตรวจ</th>
-                            <th class="px-4 py-3 lg:px-6 hidden xl:table-cell">รายละเอียด</th>
-                            <th class="px-4 py-3 lg:px-6">สถานะ</th>
-                            <th class="px-4 py-3 lg:px-6">จัดการ</th>
+                            <th class="px-2 py-3 lg:px-3 min-w-fit">ID</th>
+                            <th class="px-2 py-3 lg:px-3 min-w-fit">ผู้แจ้ง</th>
+                            <th class="px-2 py-3 lg:px-3 hidden md:table-cell min-w-fit">ตำแหน่ง</th>
+                            <th class="px-2 py-3 lg:px-3 hidden lg:table-cell min-w-fit text-xs">วันที่</th>
+                            <th class="px-2 py-3 lg:px-3 min-w-fit">วันที่ขอใช้ข้อมูล</th>
+                            <th class="px-3 py-3 lg:px-4 w-full">รายละเอียด</th>
+                            <th class="px-2 py-3 lg:px-3 min-w-fit">สถานะ</th>
+                            <th class="px-2 py-3 lg:px-3 min-w-fit">จัดการ</th>
                         </tr>
                     </thead>
                     <tbody id="dataTableBody">
@@ -547,29 +547,29 @@
 
             tableBody.innerHTML = data.map((item, idx) => `
                 <tr class="table-row-highlight border-b border-blue-100 transition-all duration-200">
-                    <td class="px-4 py-3 lg:px-6 font-mono font-bold text-blue-700">${item.requestId}</td>
-                    <td class="px-4 py-3 lg:px-6 font-bold text-blue-900">
-                        <div class="max-w-xs">
+                    <td class="px-2 py-3 lg:px-3 font-mono font-bold text-blue-700 text-xs whitespace-nowrap">${item.requestId}</td>
+                    <td class="px-2 py-3 lg:px-3 font-bold text-blue-900 text-sm">
+                        <div class="min-w-fit">
                             <p class="truncate">${item.fullName}</p>
                             <p class="text-xs text-blue-600 md:hidden">${item.position}</p>
                         </div>
                     </td>
-                    <td class="px-4 py-3 lg:px-6 text-blue-700 hidden md:table-cell text-sm font-medium">${item.position}</td>
-                    <td class="px-4 py-3 lg:px-6 text-xs text-blue-600 hidden lg:table-cell">${formatDate(item.submissionDate)}</td>
-                    <td class="px-4 py-3 lg:px-6 font-bold text-blue-700 text-sm">${formatSimpleDate(item.targetDate)}</td>
-                    <td class="px-4 py-3 lg:px-6 text-sm text-blue-700 hidden xl:table-cell">
-                        <div class="max-w-xs truncate" title="${item.details || '-'}">${item.details || '-'}</div>
+                    <td class="px-2 py-3 lg:px-3 text-blue-700 hidden md:table-cell text-xs font-medium whitespace-nowrap">${item.position}</td>
+                    <td class="px-2 py-3 lg:px-3 text-xs text-blue-600 hidden lg:table-cell whitespace-nowrap">${formatDate(item.submissionDate)}</td>
+                    <td class="px-2 py-3 lg:px-3 font-bold text-blue-700 text-xs whitespace-nowrap">${formatSimpleDate(item.targetDate)}</td>
+                    <td class="px-3 py-3 lg:px-4 text-sm text-blue-700">
+                        <div class="break-words" title="${item.details || '-'}">${item.details || '-'}</div>
                     </td>
-                    <td class="px-4 py-3 lg:px-6">
+                    <td class="px-2 py-3 lg:px-3 whitespace-nowrap">
                         ${getStatusBadge(item.status)}
                     </td>
-                    <td class="px-4 py-3 lg:px-6">
-                        <div class="flex gap-2 flex-wrap">
-                            <button class="edit-btn bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all" data-index="${idx}">
-                                <i class="fa-solid fa-edit mr-1"></i>แก้ไข
+                    <td class="px-2 py-3 lg:px-3 whitespace-nowrap">
+                        <div class="flex gap-1 flex-wrap justify-center">
+                            <button class="edit-btn bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-sm font-bold transition-all" data-index="${idx}" title="แก้ไขสถานะ">
+                                <i class="fa-solid fa-edit"></i>
                             </button>
-                            <button class="delete-btn bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all" data-index="${idx}">
-                                <i class="fa-solid fa-trash mr-1"></i>ลบ
+                            <button class="delete-btn bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg text-sm font-bold transition-all" data-index="${idx}" title="ลบข้อมูล">
+                                <i class="fa-solid fa-trash"></i>
                             </button>
                         </div>
                     </td>
@@ -651,7 +651,7 @@
             if (index >= 0 && index < allData.length) {
                 const submitBtn = event.target.querySelector('button[type="submit"]');
                 submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin mr-2"></i>บันทึกข้อมูล...';
+                submitBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin mr-2"></i>บันทึก...';
 
                 try {
                     const params = new URLSearchParams();
@@ -669,7 +669,7 @@
                     renderTable(allData);
                     updateStats(allData);
                     closeStatusModal();
-                    showNotification('✅ บันทึกสถานะสำเร็จ!', 'success');
+                    showNotification('✅ บันทึกสำเร็จ!', 'success');
                     showStatusMessage('✅ อัปเดตสถานะเรียบร้อย', 'success');
                 } catch (err) {
                     console.error('Error:', err);
@@ -677,7 +677,7 @@
                     renderTable(allData);
                     updateStats(allData);
                     closeStatusModal();
-                    showNotification('✅ บันทึกสถานะสำเร็จ!', 'success');
+                    showNotification('✅ บันทึกสำเร็จ!', 'success');
                     showStatusMessage('✅ บันทึกข้อมูลเสร็จสิ้น', 'success');
                 }
                 submitBtn.disabled = false;
@@ -691,7 +691,7 @@
             
             if (index >= 0 && index < allData.length) {
                 deleteBtn.disabled = true;
-                deleteBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin mr-2"></i>ลบข้อมูล...';
+                deleteBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin mr-2"></i>ลบ...';
 
                 try {
                     const params = new URLSearchParams();
@@ -708,7 +708,7 @@
                     renderTable(allData);
                     updateStats(allData);
                     closeDeleteModal();
-                    showNotification('✅ ลบข้อมูลสำเร็จ!', 'success');
+                    showNotification('✅ ลบสำเร็จ!', 'success');
                     showStatusMessage('✅ ลบข้อมูลเสร็จสิ้น', 'success');
                 } catch (err) {
                     console.error('Error:', err);
@@ -716,7 +716,7 @@
                     renderTable(allData);
                     updateStats(allData);
                     closeDeleteModal();
-                    showNotification('✅ ลบข้อมูลสำเร็จ!', 'success');
+                    showNotification('✅ ลบสำเร็จ!', 'success');
                     showStatusMessage('✅ ลบข้อมูลเรียบร้อย', 'success');
                 }
                 deleteBtn.disabled = false;
@@ -800,5 +800,5 @@
             setInterval(updateLastUpdateTime, 60000);
         };
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cf62faee6ea87c9',t:'MTc3MTM0MDc2MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cf66ec835b9a18c',t:'MTc3MTM0MzM0Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
