@@ -278,13 +278,14 @@
                             <th class="px-4 py-3 lg:px-6 hidden md:table-cell">ตำแหน่ง/ชั้น</th>
                             <th class="px-4 py-3 lg:px-6 hidden lg:table-cell">วันที่แจ้ง</th>
                             <th class="px-4 py-3 lg:px-6">เป้าหมายตรวจ</th>
+                            <th class="px-4 py-3 lg:px-6 hidden xl:table-cell">รายละเอียด</th>
                             <th class="px-4 py-3 lg:px-6">สถานะ</th>
                             <th class="px-4 py-3 lg:px-6">จัดการ</th>
                         </tr>
                     </thead>
                     <tbody id="dataTableBody">
                         <tr>
-                            <td colspan="7" class="px-4 py-16 text-center">
+                            <td colspan="8" class="px-4 py-16 text-center">
                                 <div class="flex flex-col items-center gap-3">
                                     <div class="loader-big"></div>
                                     <p class="text-slate-500 font-medium">กำลังโหลดข้อมูล...</p>
@@ -405,11 +406,9 @@
             if(!dateValue && dateValue !== 0) return '-';
             try {
                 let date;
-                // รองรับหลายรูปแบบวันที่
                 if (typeof dateValue === 'string') {
                     date = new Date(dateValue);
                 } else if (typeof dateValue === 'number') {
-                    // Google Sheets serial date (1 = 1 Jan 1900)
                     date = new Date((dateValue - 25569) * 86400 * 1000);
                 } else {
                     date = new Date(dateValue);
@@ -495,7 +494,6 @@
                 console.log('✅ API Response:', data);
                 
                 if (data.result === 'success' && Array.isArray(data.data)) {
-                    // แมป Column names ให้สามารถรองรับหลายชื่อ
                     allData = data.data.map(item => ({
                         requestId: item.requestId || item['Request ID'] || item['ID'] || '-',
                         submissionDate: item.submissionDate || item['Submission Date'] || item['วันที่'] || '',
@@ -524,7 +522,7 @@
                 console.error('❌ Fetch error:', err);
                 tableBody.innerHTML = `
                     <tr>
-                        <td colspan="7" class="px-6 py-10 text-center">
+                        <td colspan="8" class="px-6 py-10 text-center">
                             <div class="text-red-600 font-bold">
                                 <i class="fa-solid fa-exclamation-triangle mr-2"></i>
                                 ${err.message}
@@ -542,7 +540,7 @@
         function renderTable(data) {
             const tableBody = document.getElementById('dataTableBody');
             if (data.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="7" class="px-6 py-12 text-center text-slate-400 italic">ไม่พบข้อมูลคำร้อง</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="8" class="px-6 py-12 text-center text-slate-400 italic">ไม่พบข้อมูลคำร้อง</td></tr>`;
                 document.getElementById('visibleCount').innerText = '0';
                 return;
             }
@@ -559,6 +557,9 @@
                     <td class="px-4 py-3 lg:px-6 text-blue-700 hidden md:table-cell text-sm font-medium">${item.position}</td>
                     <td class="px-4 py-3 lg:px-6 text-xs text-blue-600 hidden lg:table-cell">${formatDate(item.submissionDate)}</td>
                     <td class="px-4 py-3 lg:px-6 font-bold text-blue-700 text-sm">${formatSimpleDate(item.targetDate)}</td>
+                    <td class="px-4 py-3 lg:px-6 text-sm text-blue-700 hidden xl:table-cell">
+                        <div class="max-w-xs truncate" title="${item.details || '-'}">${item.details || '-'}</div>
+                    </td>
                     <td class="px-4 py-3 lg:px-6">
                         ${getStatusBadge(item.status)}
                     </td>
@@ -799,5 +800,5 @@
             setInterval(updateLastUpdateTime, 60000);
         };
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cf6096cc0d487bf',t:'MTc3MTMzOTE5NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cf62faee6ea87c9',t:'MTc3MTM0MDc2MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
