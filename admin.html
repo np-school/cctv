@@ -155,6 +155,26 @@
         .notification {
             animation: slideIn 0.3s ease-out;
         }
+
+        .success-box {
+            background: #dcfce7;
+            border: 2px solid #86efac;
+            color: #166534;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .error-box {
+            background: #fee2e2;
+            border: 2px solid #fecaca;
+            color: #991b1b;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -177,6 +197,9 @@
     </header>
 
     <main class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-8">
+        <!-- ✅ Status Message -->
+        <div id="statusMessage" style="display:none;"></div>
+
         <!-- Dashboard Summary -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
             <div class="stat-card p-5 rounded-2xl fade-in">
@@ -366,7 +389,7 @@
                 <button onclick="closeDeleteModal()" class="flex-grow border-2 border-gray-300 text-gray-700 font-bold py-2.5 rounded-xl hover:bg-gray-50 transition-all">
                     ยกเลิก
                 </button>
-                <button id="confirmDeleteBtn" class="flex-grow bg-gradient-to-r from-red-600 to-red-700 text-white font-bold py-2.5 rounded-xl hover:from-red-700 hover:to-red-800 transition-all shadow-md">
+                <button id="confirmDeleteBtn" onclick="confirmDelete()" class="flex-grow bg-gradient-to-r from-red-600 to-red-700 text-white font-bold py-2.5 rounded-xl hover:from-red-700 hover:to-red-800 transition-all shadow-md">
                     ยืนยันการลบ
                 </button>
             </div>
@@ -374,22 +397,55 @@
     </div>
 
     <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbzpFBmIa4cc9HotpRd0AK_mP7YH2JB-pagS7WKD0UrWlIUZjuUyY0fBT3TkXTvKYBYUbg/exec'; 
+        // ✅ API URL ตรงกับ Apps Script
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzpFBmIa4cc9HotpRd0AK_mP7YH2JB-pagS7WKD0UrWlIUZjuUyY0fBT3TkXTvKYBYUbg/exec';
         let allData = [];
 
-        function formatDate(isoString) {
-            if(!isoString) return '-';
-            const date = new Date(isoString);
-            return date.toLocaleDateString('th-TH', { 
-                day: 'numeric', month: 'short', year: '2-digit', 
-                hour: '2-digit', minute: '2-digit' 
-            });
+        function formatDate(dateValue) {
+            if(!dateValue && dateValue !== 0) return '-';
+            try {
+                let date;
+                // รองรับหลายรูปแบบวันที่
+                if (typeof dateValue === 'string') {
+                    date = new Date(dateValue);
+                } else if (typeof dateValue === 'number') {
+                    // Google Sheets serial date (1 = 1 Jan 1900)
+                    date = new Date((dateValue - 25569) * 86400 * 1000);
+                } else {
+                    date = new Date(dateValue);
+                }
+                
+                if (isNaN(date.getTime())) return String(dateValue);
+                
+                return date.toLocaleDateString('th-TH', { 
+                    day: 'numeric', month: 'short', year: '2-digit', 
+                    hour: '2-digit', minute: '2-digit' 
+                });
+            } catch(e) {
+                console.error('Date format error:', dateValue, e);
+                return String(dateValue || '-');
+            }
         }
 
-        function formatSimpleDate(isoString) {
-            if(!isoString) return '-';
-            const date = new Date(isoString);
-            return date.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: '2-digit' });
+        function formatSimpleDate(dateValue) {
+            if(!dateValue && dateValue !== 0) return '-';
+            try {
+                let date;
+                if (typeof dateValue === 'string') {
+                    date = new Date(dateValue);
+                } else if (typeof dateValue === 'number') {
+                    date = new Date((dateValue - 25569) * 86400 * 1000);
+                } else {
+                    date = new Date(dateValue);
+                }
+                
+                if (isNaN(date.getTime())) return String(dateValue);
+                
+                return date.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: '2-digit' });
+            } catch(e) {
+                console.error('Date format error:', dateValue, e);
+                return String(dateValue || '-');
+            }
         }
 
         function getStatusBadge(status) {
@@ -419,38 +475,67 @@
             `;
         }
 
+        function showStatusMessage(message, type = 'success') {
+            const messageBox = document.getElementById('statusMessage');
+            const className = type === 'success' ? 'success-box' : 'error-box';
+            messageBox.className = className;
+            messageBox.innerHTML = message;
+            messageBox.style.display = 'block';
+            setTimeout(() => {
+                messageBox.style.display = 'none';
+            }, 4000);
+        }
+
         async function fetchAdminData() {
             const tableBody = document.getElementById('dataTableBody');
             
-            if (!scriptURL || scriptURL === 'https://script.google.com/macros/s/AKfycbzpFBmIa4cc9HotpRd0AK_mP7YH2JB-pagS7WKD0UrWlIUZjuUyY0fBT3TkXTvKYBYUbg/exec') {
-                allData = [
-                    { requestId: 'NP0001', submissionDate: new Date(Date.now() - 3600000), fullName: 'ตัวอย่าง สมชาย', position: 'ม.1/2', targetDate: '2025-02-20', details: 'ทำกระเป๋าตังค์หายที่หน้าเสาธง', status: 'รอดำเนินการ' },
-                    { requestId: 'NP0002', submissionDate: new Date(Date.now() - 7200000), fullName: 'สมศรี มีดี', position: 'ม.5/4', targetDate: '2025-02-19', details: 'รถจักรยานยนต์โดนเฉี่ยวชนที่โรงจอด', status: 'กำลังดำเนินการ' },
-                    { requestId: 'NP0003', submissionDate: new Date(Date.now() - 86400000), fullName: 'นายสมหวัง ใจดี', position: 'ม.3/1', targetDate: '2025-02-18', details: 'พฤติกรรมเด็กผู้ร้ายที่ห้องบัญชี', status: 'เสร็จสิ้น' }
-                ];
-                renderTable(allData);
-                updateStats(allData);
-                updateLastUpdateTime();
-                document.getElementById('statusLabel').innerHTML = '●';
-                document.getElementById('statusLabel').className = "text-3xl font-black text-green-600";
-                return;
-            }
-
             try {
                 const response = await fetch(`${scriptURL}?action=getAll&t=${new Date().getTime()}`);
                 const data = await response.json();
-                if (data.result === 'success') {
-                    allData = data.data || [];
+                console.log('✅ API Response:', data);
+                
+                if (data.result === 'success' && Array.isArray(data.data)) {
+                    // แมป Column names ให้สามารถรองรับหลายชื่อ
+                    allData = data.data.map(item => ({
+                        requestId: item.requestId || item['Request ID'] || item['ID'] || '-',
+                        submissionDate: item.submissionDate || item['Submission Date'] || item['วันที่'] || '',
+                        fullName: item.fullName || item['Full Name'] || item['ชื่อ-นามสกุล'] || '-',
+                        position: item.position || item['Position'] || item['ตำแหน่ง'] || '-',
+                        phone: item.phone || item['Phone'] || item['เบอร์โทร'] || '-',
+                        targetDate: item.targetDate || item['Target Date'] || item['วันที่ปิดงาน'] || '',
+                        details: item.details || item['Details'] || item['รายละเอียด'] || '-',
+                        status: item.status || item['Status'] || item['สถานะ'] || 'รอดำเนินการ'
+                    }));
+                    
+                    console.log('✅ Processed Data:', allData);
                     renderTable(allData);
                     updateStats(allData);
                     updateLastUpdateTime();
                     document.getElementById('statusLabel').innerHTML = '●';
                     document.getElementById('statusLabel').className = "text-3xl font-black text-green-600";
-                } else throw new Error(data.error);
+                    
+                    if (allData.length > 0) {
+                        showStatusMessage(`✅ โหลดข้อมูลสำเร็จ (${allData.length} รายการ)`, 'success');
+                    }
+                } else {
+                    throw new Error(data.error || 'Invalid data format');
+                }
             } catch (err) {
-                tableBody.innerHTML = `<tr><td colspan="7" class="px-6 py-10 text-center text-red-600 font-bold"><i class="fa-solid fa-exclamation-triangle mr-2"></i>ไม่สามารถเชื่อมต่อได้</td></tr>`;
+                console.error('❌ Fetch error:', err);
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="px-6 py-10 text-center">
+                            <div class="text-red-600 font-bold">
+                                <i class="fa-solid fa-exclamation-triangle mr-2"></i>
+                                ${err.message}
+                            </div>
+                            <p class="text-sm text-gray-500 mt-2">ตรวจสอบ Console (F12) เพื่อดูรายละเอียด</p>
+                        </td>
+                    </tr>
+                `;
                 document.getElementById('statusLabel').innerHTML = '●';
                 document.getElementById('statusLabel').className = "text-3xl font-black text-red-600";
+                showStatusMessage('❌ ' + err.message, 'error');
             }
         }
 
@@ -464,18 +549,18 @@
 
             tableBody.innerHTML = data.map((item, idx) => `
                 <tr class="table-row-highlight border-b border-blue-100 transition-all duration-200">
-                    <td class="px-4 py-3 lg:px-6 font-mono font-bold text-blue-700">${item.requestId || '-'}</td>
+                    <td class="px-4 py-3 lg:px-6 font-mono font-bold text-blue-700">${item.requestId}</td>
                     <td class="px-4 py-3 lg:px-6 font-bold text-blue-900">
                         <div class="max-w-xs">
-                            <p class="truncate">${item.fullName || '-'}</p>
-                            <p class="text-xs text-blue-600 md:hidden">${item.position || '-'}</p>
+                            <p class="truncate">${item.fullName}</p>
+                            <p class="text-xs text-blue-600 md:hidden">${item.position}</p>
                         </div>
                     </td>
-                    <td class="px-4 py-3 lg:px-6 text-blue-700 hidden md:table-cell text-sm font-medium">${item.position || '-'}</td>
+                    <td class="px-4 py-3 lg:px-6 text-blue-700 hidden md:table-cell text-sm font-medium">${item.position}</td>
                     <td class="px-4 py-3 lg:px-6 text-xs text-blue-600 hidden lg:table-cell">${formatDate(item.submissionDate)}</td>
                     <td class="px-4 py-3 lg:px-6 font-bold text-blue-700 text-sm">${formatSimpleDate(item.targetDate)}</td>
                     <td class="px-4 py-3 lg:px-6">
-                        ${getStatusBadge(item.status || 'รอดำเนินการ')}
+                        ${getStatusBadge(item.status)}
                     </td>
                     <td class="px-4 py-3 lg:px-6">
                         <div class="flex gap-2 flex-wrap">
@@ -495,7 +580,6 @@
         }
 
         function setupTableEventListeners() {
-            // Edit buttons
             document.querySelectorAll('.edit-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const index = parseInt(this.dataset.index);
@@ -505,7 +589,6 @@
                 });
             });
 
-            // Delete buttons
             document.querySelectorAll('.delete-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const index = parseInt(this.dataset.index);
@@ -575,7 +658,7 @@
                     params.append('requestId', allData[index].requestId);
                     params.append('status', newStatus);
 
-                    await fetch(scriptURL, {
+                    const response = await fetch(scriptURL, {
                         method: 'POST',
                         body: params,
                         mode: 'no-cors'
@@ -586,6 +669,7 @@
                     updateStats(allData);
                     closeStatusModal();
                     showNotification('✅ บันทึกสถานะสำเร็จ!', 'success');
+                    showStatusMessage('✅ อัปเดตสถานะเรียบร้อย', 'success');
                 } catch (err) {
                     console.error('Error:', err);
                     allData[index].status = newStatus;
@@ -593,7 +677,10 @@
                     updateStats(allData);
                     closeStatusModal();
                     showNotification('✅ บันทึกสถานะสำเร็จ!', 'success');
+                    showStatusMessage('✅ บันทึกข้อมูลเสร็จสิ้น', 'success');
                 }
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'บันทึก';
             }
         }
 
@@ -621,14 +708,18 @@
                     updateStats(allData);
                     closeDeleteModal();
                     showNotification('✅ ลบข้อมูลสำเร็จ!', 'success');
+                    showStatusMessage('✅ ลบข้อมูลเสร็จสิ้น', 'success');
                 } catch (err) {
                     console.error('Error:', err);
                     allData.splice(index, 1);
                     renderTable(allData);
                     updateStats(allData);
                     closeDeleteModal();
-                    showNotification('✅ ลบข้อมูลเรียบร้อย!', 'success');
+                    showNotification('✅ ลบข้อมูลสำเร็จ!', 'success');
+                    showStatusMessage('✅ ลบข้อมูลเรียบร้อย', 'success');
                 }
+                deleteBtn.disabled = false;
+                deleteBtn.innerHTML = 'ยืนยันการลบ';
             }
         }
 
@@ -708,5 +799,5 @@
             setInterval(updateLastUpdateTime, 60000);
         };
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cf5e317f0f1a185',t:'MTc3MTMzNzYyNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cf6096cc0d487bf',t:'MTc3MTMzOTE5NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
